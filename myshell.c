@@ -311,8 +311,6 @@ static void command_exec(char* program, char** command, int num_tokens) {
 
         if (contains_output_redirect(command, num_tokens)) {
             int index = get_index_of_token(command, num_tokens, ">");
-
-            fprintf(stderr, "%d \n ", index);
             command[index] = NULL;
 
             if (index == -1 || index == num_tokens - 1) {
@@ -328,6 +326,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
         }
 
         if (contains_error_redirect(command, num_tokens)){
+            fprintf(stderr, "contains error redirect");
             int index = get_index_of_token(command, num_tokens, "2>");
             command[index] = NULL;
 
