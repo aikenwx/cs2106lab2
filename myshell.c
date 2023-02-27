@@ -62,6 +62,8 @@ static bool get_index_of_token(char** args, int num_args, char* token) {
     // returns index of token in args
     for (int i = 0; i < num_args; i++) {
         if (strcmp(args[i], token) == 0) {
+            fprintf(stderr, "%d \n ", i);
+            fprintf(stderr, "%s \n ", args[i]);
             return i;
         }
     }
@@ -311,6 +313,8 @@ static void command_exec(char* program, char** command, int num_tokens) {
 
         if (contains_output_redirect(command, num_tokens)) {
             int index = get_index_of_token(command, num_tokens, ">");
+
+            fprintf(stderr, "%d \n ", index);
             command[index + 1] = NULL;
 
             if (index == -1 || index == num_tokens - 1) {
@@ -331,6 +335,8 @@ static void command_exec(char* program, char** command, int num_tokens) {
             // execv(program, command);
         }
 
+
+        fprintf(stderr, "test %s", contains_error_redirect(command, num_tokens) ? "true" : "false");
         // if (contains_error_redirect(command, num_tokens)){
         //     int index = get_index_of_token(command, num_tokens, "2>");
         //     command[index] = NULL;
@@ -352,10 +358,6 @@ static void command_exec(char* program, char** command, int num_tokens) {
             char** new_command = (char**)realloc(command, sizeof(command) + sizeof(NULL));
             command[num_tokens] = NULL;
             command = new_command;
-        }
-        // print commmand
-        for (int i = 0; i < num_tokens; i++) {
-            fprintf(stderr, "%s \n ", command[i]);
         }
 
         execv(program, command);
