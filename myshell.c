@@ -319,7 +319,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
             }
 
         
-            int output_file = open("./a.txt", O_WRONLY | O_CREAT | O_TRUNC);
+            int output_file = open("./a.txt", O_WRONLY | O_CREAT | O_TRUNC | O_SYNC, 0644);
 
             dup2(output_file, STDOUT_FILENO);
             // close(output_file);
@@ -328,7 +328,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
             //     fprintf(stderr, "%s \n ", command[i]);
             // }
 
-            execv(program, command);
+            // execv(program, command);
         }
 
         // if (contains_error_redirect(command, num_tokens)){
