@@ -58,7 +58,7 @@ static bool contains_input_redirect(char** args, int num_args) {
     return false;
 }
 
-static bool get_index_of_token(char** args, int num_args, char* token) {
+static int get_index_of_token(char** args, int num_args, char* token) {
     // returns index of token in args
     for (int i = 0; i < num_args; i++) {
         if (strcmp(args[i], token) == 0) {
@@ -315,40 +315,34 @@ static void command_exec(char* program, char** command, int num_tokens) {
             int index = get_index_of_token(command, num_tokens, ">");
 
             fprintf(stderr, "%d \n ", index);
-            command[index + 1] = NULL;
+            command[index] = NULL;
 
             if (index == -1 || index == num_tokens - 1) {
                 fprintf(stderr, "Wrong command");
                 exit(1);
             }
 
-        
-            int output_file = open("./a.txt", O_WRONLY | O_CREAT | O_TRUNC | O_SYNC, 0644);
+            int output_file = open(command[index + 1], O_WRONLY | O_CREAT | O_TRUNC | O_SYNC, 0644);
 
             dup2(output_file, STDOUT_FILENO);
             close(output_file);
 
-            // for (int i = 0; i < num_tokens; i++) {
-            //     fprintf(stderr, "%s \n ", command[i]);
-            // }
-
-            // execv(program, command);
         }
 
 
         fprintf(stderr, "test %s", contains_error_redirect(command, num_tokens) ? "true" : "false");
-        // if (contains_error_redirect(command, num_tokens)){
-        //     int index = get_index_of_token(command, num_tokens, "2>");
-        //     command[index] = NULL;
+        if (contains_error_redirect(command, num_tokens)){
+            int index = get_index_of_token(command, num_tokens, "2>");
+            command[index] = NULL;
 
-        //     if (index == -1 || index == num_tokens - 1) {
-        //         fprintf(stderr, "Wrong command");
-        //         exit(1);
-        //     }
-        //     int error_file = open(command[index + 1], O_WRONLY | O_CREAT | O_TRUNC | O_SYNC, 0644);
-        //     dup2(error_file, STDERR_FILENO);
-        //     close(error_file);
-        // }
+            if (index == -1 || index == num_tokens - 1) {
+                fprintf(stderr, "Wrong command");
+                exit(1);
+            }
+            int error_file = open(command[index + 1], O_WRONLY | O_CREAT | O_TRUNC | O_SYNC, 0644);
+            dup2(error_file, STDERR_FILENO);
+            close(error_file);
+        }
 
         // else : ex1, ex2
         // call execv() to execute the command in the child process
