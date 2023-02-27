@@ -329,8 +329,6 @@ static void command_exec(char* program, char** command, int num_tokens) {
 
         }
 
-
-        fprintf(stderr, "test %s", contains_error_redirect(command, num_tokens) ? "true" : "false");
         if (contains_error_redirect(command, num_tokens)){
             int index = get_index_of_token(command, num_tokens, "2>");
             command[index] = NULL;
