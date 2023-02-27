@@ -293,6 +293,9 @@ static void command_exec(char* program, char** command, int num_tokens) {
         // call execv() to execute the command in the child process
 
         if (contains_input_redirect(command, num_tokens)) {
+
+            // print log
+            printf("contains input redirect");
             int index = get_index_of_token(command, num_tokens, "<");
             if (index == -1 || index == num_tokens - 1) {
                 fprintf(stderr, "Wrong command");
@@ -308,6 +311,8 @@ static void command_exec(char* program, char** command, int num_tokens) {
         }
 
         if (contains_output_redirect(command, num_tokens)) {
+
+            printf("contains output redirect");
             int index = get_index_of_token(command, num_tokens, ">");
             if (index == -1 || index == num_tokens - 1) {
                 fprintf(stderr, "Wrong command");
@@ -319,6 +324,8 @@ static void command_exec(char* program, char** command, int num_tokens) {
         }
 
         if (contains_error_redirect(command, num_tokens)) {
+
+            printf("contains error redirect");
             int index = get_index_of_token(command, num_tokens, "2>");
             if (index == -1 || index == num_tokens - 1) {
                 fprintf(stderr, "Wrong command");
