@@ -399,8 +399,6 @@ static void command(char** command, int num_tokens) {
         command_fg();
         return;
     }
-
-    printf("test");
     // call command_exec() for all other commands           : ex1, ex2, ex3
     command_exec(program, command, num_tokens);
 }
