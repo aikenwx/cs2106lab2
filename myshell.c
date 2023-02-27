@@ -311,7 +311,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
 
         if (contains_output_redirect(command, num_tokens)) {
             int index = get_index_of_token(command, num_tokens, ">");
-            command[index] = NULL;
+            command[index + 1] = NULL;
 
             if (index == -1 || index == num_tokens - 1) {
                 fprintf(stderr, "Wrong command");
