@@ -294,7 +294,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
         if (contains_input_redirect(command, num_tokens)) {
             // print log
             int index = get_index_of_token(command, num_tokens, "<");
-            command[index] = "";
+            command[index] = NULL;
 
             if (index == -1 || index == num_tokens - 1) {
                 fprintf(stderr, "Wrong command");
@@ -311,26 +311,26 @@ static void command_exec(char* program, char** command, int num_tokens) {
 
         if (contains_output_redirect(command, num_tokens)) {
             int index = get_index_of_token(command, num_tokens, ">");
-            command[index] = "";
+            command[index] = NULL;
 
             if (index == -1 || index == num_tokens - 1) {
                 fprintf(stderr, "Wrong command");
                 exit(1);
             }
-            int output_file = open(command[index + 1], O_WRONLY | O_CREAT | O_TRUNC);
+            int output_file = open(command[index + 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
             dup2(output_file, STDOUT_FILENO);
             close(output_file);
         }
 
         if (contains_error_redirect(command, num_tokens)) {            
             int index = get_index_of_token(command, num_tokens, "2>");
-            command[index] = "";
+            command[index] = NULL;
 
             if (index == -1 || index == num_tokens - 1) {
                 fprintf(stderr, "Wrong command");
                 exit(1);
             }
-            int error_file = open(command[index + 1], O_WRONLY | O_CREAT | O_TRUNC);
+            int error_file = open(command[index + 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
             dup2(error_file, STDERR_FILENO);
             close(error_file);
         }
