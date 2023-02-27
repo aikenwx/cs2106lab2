@@ -317,6 +317,8 @@ static void command_exec(char* program, char** command, int num_tokens) {
                 fprintf(stderr, "Wrong command");
                 exit(1);
             }
+
+            fprintf(stderr, "output file: %s", command[index + 1]);
             int output_file = open(command[index + 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 
             dup2(output_file, STDOUT_FILENO);
@@ -346,9 +348,6 @@ static void command_exec(char* program, char** command, int num_tokens) {
             command = new_command;
         }
         // print commmand
-        for (int i = 0; i < num_tokens; i++) {
-            fprintf(stdout,"%s ", command[i]);
-        }
         execv(program, command);
 
         // Exit the child
