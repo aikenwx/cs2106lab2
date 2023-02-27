@@ -322,7 +322,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
             int output_file = open("./a.txt", O_WRONLY | O_CREAT | O_TRUNC | O_SYNC, 0644);
 
             dup2(output_file, STDOUT_FILENO);
-            // close(output_file);
+            close(output_file);
 
             // for (int i = 0; i < num_tokens; i++) {
             //     fprintf(stderr, "%s \n ", command[i]);
