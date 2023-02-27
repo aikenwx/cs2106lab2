@@ -31,6 +31,43 @@ static bool ends_with_ampersand(char** args, int num_args) {
     return num_args > 0 && strcmp(args[num_args - 1], "&") == 0;
 }
 
+static bool contains_output_redirect(char** args, int num_args) {
+    for (int i = 0; i < num_args; i++) {
+        if (strcmp(args[i], ">") == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static bool contains_error_redirect(char** args, int num_args) {
+    for (int i = 0; i < num_args; i++) {
+        if (strcmp(args[i], "2>") == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static bool contains_input_redirect(char** args, int num_args) {
+    for (int i = 0; i < num_args; i++) {
+        if (strcmp(args[i], "<") == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static bool get_index_of_token(char** args, int num_args, char* token) {
+    // returns index of token in args
+    for (int i = 0; i < num_args; i++) {
+        if (strcmp(args[i], token) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 static void add_new_proc(pid_t pid) {
     pcb_table[pcb_table_count].pid = pid;
     pcb_table[pcb_table_count].status = RUNNING;
@@ -44,22 +81,19 @@ static void add_new_proc(pid_t pid) {
 
 // static void signal_handler(int signo) {
 
-        // Use the signo to identy ctrl-Z or ctrl-C and print “[PID] stopped or print “[PID] interrupted accordingly.
-        // Update the status of the process in the PCB table
+// Use the signo to identy ctrl-Z or ctrl-C and print “[PID] stopped or print “[PID] interrupted accordingly.
+// Update the status of the process in the PCB table
 
 // }
 
 /// TODO when piping file output, rememeber to make created file readable globally
 
-
 static void proc_update_status(pid_t pid, int status, int exitCode) {
+    /******* FILL IN THE CODE *******/
 
+    // Call everytime you need to update status and exit code of a process in PCBTable
 
-       /******* FILL IN THE CODE *******/
-
-        // Call everytime you need to update status and exit code of a process in PCBTable
-
-        // May use WIFEXITED, WEXITSTATUS, WIFSIGNALED, WTERMSIG, WIFSTOPPED
+    // May use WIFEXITED, WEXITSTATUS, WIFSIGNALED, WTERMSIG, WIFSTOPPED
 
     for (int i = 0; i < MAX_PROCESSES; i++) {
         if (pcb_table[i].pid == pid) {
@@ -84,27 +118,25 @@ static void handle_child_process_exited_or_stopped() {
     }
 }
 
-
 /*******************************************************************************
  * Built-in Commands
  ******************************************************************************/
 
 static void command_info(char** command, int num_tokens) {
-
-        /******* FILL IN THE CODE *******/
+    /******* FILL IN THE CODE *******/
     // If option is 0
-        //Print details of all processes in the order in which they were run. You will need to print their process IDs, their current status (Exited, Running, Terminating, Stopped)
-        // For Exited processes, print their exit codes.
+    // Print details of all processes in the order in which they were run. You will need to print their process IDs, their current status (Exited, Running, Terminating, Stopped)
+    // For Exited processes, print their exit codes.
     // If option is 1
-        //Print the number of exited process.
+    // Print the number of exited process.
     // If option is 2
-        //Print the number of running process.
+    // Print the number of running process.
     // If option is 3
-        //Print the number of terminating process.
+    // Print the number of terminating process.
     // If option is 4
-        //Print the number of stopped process.
+    // Print the number of stopped process.
 
-    //For all other cases print “Wrong command” to stderr.
+    // For all other cases print “Wrong command” to stderr.
     if (num_tokens != 2) {
         fprintf(stderr, "Wrong command\n");
         return;
@@ -115,20 +147,20 @@ static void command_info(char** command, int num_tokens) {
     if (option == 0) {
         for (int i = 0; i < pcb_table_count; i++) {
             switch (pcb_table[i].status) {
-            case EXITED:
-                printf("[%d] Exited %d", pcb_table[i].pid, pcb_table[i].exitCode);
-                break;
-            case RUNNING:
-                printf("[%d] Running", pcb_table[i].pid);
-                break;
-            case TERMINATING:
-                printf("[%d] Terminating", pcb_table[i].pid);
-                break;
-            case STOPPED:
-                printf("[%d] Stopped", pcb_table[i].pid);
-                break;
-            default:
-                break;
+                case EXITED:
+                    printf("[%d] Exited %d", pcb_table[i].pid, pcb_table[i].exitCode);
+                    break;
+                case RUNNING:
+                    printf("[%d] Running", pcb_table[i].pid);
+                    break;
+                case TERMINATING:
+                    printf("[%d] Terminating", pcb_table[i].pid);
+                    break;
+                case STOPPED:
+                    printf("[%d] Stopped", pcb_table[i].pid);
+                    break;
+                default:
+                    break;
             }
             printf("\n");
         }
@@ -174,8 +206,7 @@ static void command_info(char** command, int num_tokens) {
 }
 
 static void command_wait(char** command, int num_tokens) {
-
-        /******* FILL IN THE CODE *******/
+    /******* FILL IN THE CODE *******/
     if (num_tokens != 2) {
         fprintf(stderr, "Wrong command\n");
         return;
@@ -201,10 +232,8 @@ static void command_wait(char** command, int num_tokens) {
     }
 }
 
-
 static void command_terminate(char** command, int num_tokens) {
-
-        /******* FILL IN THE CODE *******/
+    /******* FILL IN THE CODE *******/
     if (num_tokens != 2) {
         fprintf(stderr, "Wrong command\n");
         return;
@@ -212,8 +241,8 @@ static void command_terminate(char** command, int num_tokens) {
 
     // Find the pid in the PCBTable
     // If {PID} is RUNNING:
-        //Terminate it by using kill() to send SIGTERM
-        // The state of {PID} should be “Terminating” until {PID} exits
+    // Terminate it by using kill() to send SIGTERM
+    // The state of {PID} should be “Terminating” until {PID} exits
     pid_t pid_to_terminate = atoi(command[1]);
     for (int i = 0; i < pcb_table_count; i++) {
         if (pcb_table[i].pid == pid_to_terminate) {
@@ -228,24 +257,21 @@ static void command_terminate(char** command, int num_tokens) {
 }
 
 static void command_fg(/* pass necessary parameters*/) {
-
-        /******* FILL IN THE CODE *******/
+    /******* FILL IN THE CODE *******/
 
     printf("fg called\n");
     // if the {PID} status is stopped
-        //Print “[PID] resumed”
-        // Use kill() to send SIGCONT to {PID} to get it continue and wait for it
-        // After the process terminate, update status and exit code (call proc_update_status())
+    // Print “[PID] resumed”
+    // Use kill() to send SIGCONT to {PID} to get it continue and wait for it
+    // After the process terminate, update status and exit code (call proc_update_status())
 }
-
 
 /*******************************************************************************
  * Program Execution
  ******************************************************************************/
 
 static void command_exec(char* program, char** command, int num_tokens) {
-
-        /******* FILL IN THE CODE *******/
+    /******* FILL IN THE CODE *******/
 
     // check if program exists and is executable : use access()
     if (access(program, F_OK) != 0 && access(program, X_OK) != 0) {
@@ -262,34 +288,71 @@ static void command_exec(char* program, char** command, int num_tokens) {
         // check file redirection operation is present : ex3
 
         // if < or > or 2> present:
-            // use fopen/open file to open the file for reading/writing with  permission O_RDONLY, O_WRONLY, O_CREAT, O_TRUNC, O_SYNC and 0644
-            // use dup2 to redirect the stdin, stdout and stderr to the files
-            // call execv() to execute the command in the child process
+        // use fopen/open file to open the file for reading/writing with  permission O_RDONLY, O_WRONLY, O_CREAT, O_TRUNC, O_SYNC and 0644
+        // use dup2 to redirect the stdin, stdout and stderr to the files
+        // call execv() to execute the command in the child process
+
+        if (contains_input_redirect(command, num_tokens)) {
+            int index = get_index_of_token(command, num_tokens, "<");
+            if (index == -1 || index == num_tokens - 1) {
+                fprintf(stderr, "Wrong command");
+            }
+            int input_file = open(command[index + 1], O_RDONLY);
+
+            if (input_file == -1) {
+                fprintf(stderr, "%s does not exist", command[index + 1]);
+                exit(1);
+            }
+            dup2(input_file, STDIN_FILENO);
+            close(input_file);
+        }
+
+        if (contains_output_redirect(command, num_tokens)) {
+            int index = get_index_of_token(command, num_tokens, ">");
+            if (index == -1 || index == num_tokens - 1) {
+                fprintf(stderr, "Wrong command");
+                exit(1);
+            }
+            int output_file = open(command[index + 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+            dup2(output_file, STDOUT_FILENO);
+            close(output_file);
+        }
+
+        if (contains_error_redirect(command, num_tokens)) {
+            int index = get_index_of_token(command, num_tokens, "2>");
+            if (index == -1 || index == num_tokens - 1) {
+                fprintf(stderr, "Wrong command");
+                exit(1);
+            }
+            int error_file = open(command[index + 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+            dup2(error_file, STDERR_FILENO);
+            close(error_file);
+        }
+
+        // print command string
+        printf("Command: %s", command);
 
         // else : ex1, ex2
-            // call execv() to execute the command in the child process
-            if (ends_with_ampersand(command, num_tokens)) {
-                command[num_tokens - 1] = NULL;
-            } else {
-                char** new_command = (char**) realloc(command, sizeof(command) + sizeof(NULL));
-                command[num_tokens] = NULL;
-                command = new_command;
-            }
+        // call execv() to execute the command in the child process
+        if (ends_with_ampersand(command, num_tokens)) {
+            command[num_tokens - 1] = NULL;
+        } else {
+            char** new_command = (char**)realloc(command, sizeof(command) + sizeof(NULL));
+            command[num_tokens] = NULL;
+            command = new_command;
+        }
 
-            execv(program, command);
+        execv(program, command);
 
         // Exit the child
 
-
     } else {
-
-
         // PARENT PROCESS
         // register the process in process table
         add_new_proc(pid);
 
         // If  child process need to execute in the background  (if & is present at the end )
-            //print Child [PID] in background
+        // print Child [PID] in background
         if (ends_with_ampersand(command, num_tokens)) {
             printf("Child [%d] in background\n", pid);
             waitpid(pid, NULL, WNOHANG);
@@ -310,9 +373,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
  ******************************************************************************/
 
 static void command(char** command, int num_tokens) {
-
-
-        /******* FILL IN THE CODE *******/
+    /******* FILL IN THE CODE *******/
 
     char* program = command[0];
     // if command is "info" call command_info()             : ex1
@@ -331,7 +392,7 @@ static void command(char** command, int num_tokens) {
         return;
     }
     // if command is "fg" call command_fg()                 : ex4
-    if(strcmp(program, "fg") == 0) {
+    if (strcmp(program, "fg") == 0) {
         command_fg();
         return;
     }
@@ -345,27 +406,24 @@ static void command(char** command, int num_tokens) {
  ******************************************************************************/
 
 void my_init(void) {
+    /******* FILL IN THE CODE *******/
 
-           /******* FILL IN THE CODE *******/
+    // use signal() with SIGTSTP to setup a signalhandler for ctrl+z : ex4
+    // use signal() with SIGINT to setup a signalhandler for ctrl+c  : ex4
 
-        // use signal() with SIGTSTP to setup a signalhandler for ctrl+z : ex4
-        // use signal() with SIGINT to setup a signalhandler for ctrl+c  : ex4
-
-        // anything else you require
+    // anything else you require
     pcb_table_count = 0;
     signal(SIGCHLD, handle_child_process_exited_or_stopped);
 }
 
-void my_process_command(size_t num_tokens, char **tokens) {
+void my_process_command(size_t num_tokens, char** tokens) {
+    /******* FILL IN THE CODE *******/
 
+    // Split tokens at NULL or ; to get a single command (ex1, ex2, ex3, ex4(fg command))
 
-        /******* FILL IN THE CODE *******/
-
-        // Split tokens at NULL or ; to get a single command (ex1, ex2, ex3, ex4(fg command))
-
-        // for example :  /bin/ls ; /bin/sleep 5 ; /bin/pwd
-        // split the above line as first command : /bin/ls , second command: /bin/pwd  and third command:  /bin/pwd
-        // Call command() and pass each individual command as arguements
+    // for example :  /bin/ls ; /bin/sleep 5 ; /bin/pwd
+    // split the above line as first command : /bin/ls , second command: /bin/pwd  and third command:  /bin/pwd
+    // Call command() and pass each individual command as arguements
     char* delimiter = ";";
     size_t i = 0;
     while (i < num_tokens) {
@@ -386,8 +444,6 @@ void my_process_command(size_t num_tokens, char **tokens) {
 }
 
 void my_quit(void) {
-
-
     /******* FILL IN THE CODE *******/
     // Kill every process in the PCB that is either stopped or running
 
