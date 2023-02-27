@@ -318,8 +318,8 @@ static void command_exec(char* program, char** command, int num_tokens) {
                 exit(1);
             }
 
-            fprintf(stderr, "output file: %s", command[index + 2]);
-            int output_file = open(command[index + 2], O_WRONLY | O_CREAT | O_TRUNC);
+        
+            int output_file = open("./a.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
 
             dup2(output_file, STDOUT_FILENO);
             close(output_file);
