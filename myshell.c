@@ -328,35 +328,35 @@ static void command_exec(char* program, char** command, int num_tokens) {
             //     fprintf(stderr, "%s \n ", command[i]);
             // }
 
-            execv(program, command);
+            // execv(program, command);
         }
 
-        if (contains_error_redirect(command, num_tokens)){
-            int index = get_index_of_token(command, num_tokens, "2>");
-            command[index] = NULL;
+        // if (contains_error_redirect(command, num_tokens)){
+        //     int index = get_index_of_token(command, num_tokens, "2>");
+        //     command[index] = NULL;
 
-            if (index == -1 || index == num_tokens - 1) {
-                fprintf(stderr, "Wrong command");
-                exit(1);
-            }
-            int error_file = open(command[index + 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-            dup2(error_file, STDERR_FILENO);
-            close(error_file);
-        }
+        //     if (index == -1 || index == num_tokens - 1) {
+        //         fprintf(stderr, "Wrong command");
+        //         exit(1);
+        //     }
+        //     int error_file = open(command[index + 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+        //     dup2(error_file, STDERR_FILENO);
+        //     close(error_file);
+        // }
 
-        // else : ex1, ex2
-        // call execv() to execute the command in the child process
-        if (ends_with_ampersand(command, num_tokens)) {
-            command[num_tokens - 1] = NULL;
-        } else {
-            char** new_command = (char**)realloc(command, sizeof(command) + sizeof(NULL));
-            command[num_tokens] = NULL;
-            command = new_command;
-        }
-        // print commmand
-        for (int i = 0; i < num_tokens; i++) {
-            fprintf(stderr, "%s \n ", command[i]);
-        }
+        // // else : ex1, ex2
+        // // call execv() to execute the command in the child process
+        // if (ends_with_ampersand(command, num_tokens)) {
+        //     command[num_tokens - 1] = NULL;
+        // } else {
+        //     char** new_command = (char**)realloc(command, sizeof(command) + sizeof(NULL));
+        //     command[num_tokens] = NULL;
+        //     command = new_command;
+        // }
+        // // print commmand
+        // for (int i = 0; i < num_tokens; i++) {
+        //     fprintf(stderr, "%s \n ", command[i]);
+        // }
 
         execv(program, command);
 
