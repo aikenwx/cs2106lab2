@@ -318,6 +318,8 @@ static void command_exec(char* program, char** command, int num_tokens) {
                 exit(1);
             }
             int output_file = open(command[index + 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+
+            fprintf("output file: %d", output_file);
             dup2(output_file, STDOUT_FILENO);
             close(output_file);
         }
