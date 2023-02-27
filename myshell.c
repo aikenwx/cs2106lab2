@@ -319,7 +319,6 @@ static void command_exec(char* program, char** command, int num_tokens) {
             }
             int output_file = open(command[index + 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 
-            fprintf(stderr, "output file: %d", output_file);
             dup2(output_file, STDOUT_FILENO);
             close(output_file);
         }
@@ -346,7 +345,10 @@ static void command_exec(char* program, char** command, int num_tokens) {
             command[num_tokens] = NULL;
             command = new_command;
         }
-
+        // print commmand
+        for (int i = 0; i < num_tokens; i++) {
+            frprintf(stderr,"%s ", command[i]);
+        }
         execv(program, command);
 
         // Exit the child
