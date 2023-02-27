@@ -49,6 +49,7 @@ static void add_new_proc(pid_t pid) {
 
 // }
 
+/// TODO when piping file output, rememeber to make created file readable globally
 
 
 static void proc_update_status(pid_t pid, int status, int exitCode) {
@@ -61,7 +62,7 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
         // May use WIFEXITED, WEXITSTATUS, WIFSIGNALED, WTERMSIG, WIFSTOPPED
 
     // print exit status
-    printf("Exit  df df status: %d", exitCode);
+    printf("Exit df exitcode status: %d", exitCode);
 
     for (int i = 0; i < MAX_PROCESSES; i++) {
         if (pcb_table[i].pid == pid) {
@@ -80,20 +81,20 @@ static void handle_child_process_exited_or_stopped() {
     if (WIFEXITED(w_status)) {
 
         // print w_status
-        printf("w_status: %d", w_status);
+        // printf("w_status: %d", w_status);
 
         
 
         int exit_code = WEXITSTATUS(w_status);
 
 
-        // print exit code 
-        printf("Exit code: %d", exit_code);
+        // // print exit code 
+        // printf("Exit code: %d", exit_code);
         proc_update_status(child_pid, EXITED, exit_code);
     }
     // Child did not exit normally
     if (WIFSIGNALED(w_status)) {
-        proc_update_status(child_pid, EXITED, w_status);
+        proc_update_status(child_pid, EXITED, WTERMSIG(w_status));
     }
 }
 
