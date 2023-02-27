@@ -319,12 +319,12 @@ static void command_exec(char* program, char** command, int num_tokens) {
             }
             int output_file = open(command[index + 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 
-            fprintf("output file: %d", output_file);
+            fprintf(stderr, "output file: %d", output_file);
             dup2(output_file, STDOUT_FILENO);
             close(output_file);
         }
 
-        if (contains_error_redirect(command, num_tokens)) {            
+        if (contains_error_redirect(command, num_tokens)) {
             int index = get_index_of_token(command, num_tokens, "2>");
             command[index] = NULL;
 
