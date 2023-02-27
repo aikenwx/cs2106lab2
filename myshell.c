@@ -291,20 +291,20 @@ static void command_exec(char* program, char** command, int num_tokens) {
         // use fopen/open file to open the file for reading/writing with  permission O_RDONLY, O_WRONLY, O_CREAT, O_TRUNC, O_SYNC and 0644
         // use dup2 to redirect the stdin, stdout and stderr to the files
         // call execv() to execute the command in the child process
-        printf("oifff");
+        fprintf("oifff");
 
         // print command 
         for (int i = 0; i < num_tokens; i++) {
             printf("command: %s", command[i]);
         }
         // print contains_input_redirect()
-        printf(contains_error_redirect(command, num_tokens) ? "true" : "false");
-        printf(contains_input_redirect(command, num_tokens) ? "true" : "false");
-        printf(contains_output_redirect(command, num_tokens) ? "true" : "false");
+        fprintf(contains_error_redirect(command, num_tokens) ? "true" : "false");
+        fprintf(contains_input_redirect(command, num_tokens) ? "true" : "false");
+        fprintf(contains_output_redirect(command, num_tokens) ? "true" : "false");
         if (contains_input_redirect(command, num_tokens)) {
 
             // print log
-            printf("contains input redirect");
+            fprintf("contains input redirect");
             int index = get_index_of_token(command, num_tokens, "<");
             if (index == -1 || index == num_tokens - 1) {
                 fprintf(stderr, "Wrong command");
@@ -321,7 +321,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
 
         if (contains_output_redirect(command, num_tokens)) {
 
-            printf("contains output redirect");
+            fprintf("contains output redirect");
             int index = get_index_of_token(command, num_tokens, ">");
             if (index == -1 || index == num_tokens - 1) {
                 fprintf(stderr, "Wrong command");
@@ -334,7 +334,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
 
         if (contains_error_redirect(command, num_tokens)) {
 
-            printf("contains error redirect");
+            fprintf("contains error redirect");
             int index = get_index_of_token(command, num_tokens, "2>");
             if (index == -1 || index == num_tokens - 1) {
                 fprintf(stderr, "Wrong command");
