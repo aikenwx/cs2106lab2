@@ -315,7 +315,6 @@ static void command_exec(char* program, char** command, int num_tokens) {
             int exit_status;
             waitpid(pid, &exit_status, WUNTRACED);
 
-            printf("parent process: %d");
             proc_update_status(pid, EXITED, WEXITSTATUS(exit_status));
         }
 
