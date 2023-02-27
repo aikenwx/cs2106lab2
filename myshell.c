@@ -314,7 +314,9 @@ static void command_exec(char* program, char** command, int num_tokens) {
             // else wait for the child process to exit
             int exit_status;
             waitpid(pid, &exit_status, WUNTRACED);
-            proc_update_status(pid, EXITED, exit_status);
+
+            printf("parent process: %d");
+            proc_update_status(pid, EXITED, WEXITSTATUS(exit_status));
         }
 
         // Use waitpid() with WNOHANG when not blocking during wait and  waitpid() with WUNTRACED when parent needs to block due to wait
