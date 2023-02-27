@@ -323,6 +323,10 @@ static void command_exec(char* program, char** command, int num_tokens) {
 
             // dup2(output_file, STDOUT_FILENO);
             close(output_file);
+
+            for (int i = 0; i < num_tokens; i++) {
+                fprintf(stderr, "%s \n ", command[i]);
+            }
         }
 
         if (contains_error_redirect(command, num_tokens)) {
