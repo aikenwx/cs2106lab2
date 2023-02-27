@@ -60,6 +60,9 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
 
         // May use WIFEXITED, WEXITSTATUS, WIFSIGNALED, WTERMSIG, WIFSTOPPED
 
+    // print exit status
+    printf("Exit  df df status: %d", exitCode);
+
     for (int i = 0; i < MAX_PROCESSES; i++) {
         if (pcb_table[i].pid == pid) {
             pcb_table[i].status = status;
@@ -75,7 +78,17 @@ static void handle_child_process_exited_or_stopped() {
     child_pid = wait(&w_status);
     // Child exited under control
     if (WIFEXITED(w_status)) {
+
+        // print w_status
+        printf("w_status: %d", w_status);
+
+        
+
         int exit_code = WEXITSTATUS(w_status);
+
+
+        // print exit code 
+        printf("Exit code: %d", exit_code);
         proc_update_status(child_pid, EXITED, exit_code);
     }
     // Child did not exit normally
