@@ -79,24 +79,10 @@ static void handle_child_process_exited_or_stopped() {
     child_pid = wait(&w_status);
     // Child exited under control
     if (WIFEXITED(w_status)) {
-
-        // print w_status
-        // printf("w_status: %d", w_status);
-
-        
-
-        int exit_code = WEXITSTATUS(w_status);
-
-
-        // // print exit code 
-        printf("Exit code: %d", exit_code);
-        proc_update_status(child_pid, EXITED, exit_code);
+        proc_update_status(child_pid, EXITED, WEXITSTATUS(w_status));
     }
     // Child did not exit normally
     if (WIFSIGNALED(w_status)) {
-
-        printf("Signal code: %d", WTERMSIG(w_status));
-
         proc_update_status(child_pid, EXITED, WTERMSIG(w_status));
     }
 }
@@ -315,7 +301,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
             int exit_status;
             waitpid(pid, &exit_status, WUNTRACED);
 
-            proc_update_status(pid, EXITED, WEXITSTATUS(exit_status));
+            proc_update_status(pid, EXITED, exit_status);
         }
 
         // Use waitpid() with WNOHANG when not blocking during wait and  waitpid() with WUNTRACED when parent needs to block due to wait
