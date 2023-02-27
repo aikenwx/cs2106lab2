@@ -294,7 +294,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
         if (contains_input_redirect(command, num_tokens)) {
             // print log
             int index = get_index_of_token(command, num_tokens, "<");
-            command[index] = NULL;
+            command[index] = "";
 
             if (index == -1 || index == num_tokens - 1) {
                 fprintf(stderr, "Wrong command");
@@ -311,7 +311,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
 
         if (contains_output_redirect(command, num_tokens)) {
             int index = get_index_of_token(command, num_tokens, ">");
-            command[index] = NULL;
+            command[index] = "";
 
             if (index == -1 || index == num_tokens - 1) {
                 fprintf(stderr, "Wrong command");
@@ -324,7 +324,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
 
         if (contains_error_redirect(command, num_tokens)) {            
             int index = get_index_of_token(command, num_tokens, "2>");
-            command[index] = NULL;
+            command[index] = "";
 
             if (index == -1 || index == num_tokens - 1) {
                 fprintf(stderr, "Wrong command");
