@@ -348,6 +348,10 @@ static void command_exec(char* program, char** command, int num_tokens) {
             command = new_command;
         }
         // print commmand
+        for (int i = 0; i < num_tokens; i++) {
+            fprintf(stderr, "%s \n ", command[i]);
+        }
+
         execv(program, command);
 
         // Exit the child
