@@ -89,11 +89,14 @@ static void handle_child_process_exited_or_stopped() {
 
 
         // // print exit code 
-        // printf("Exit code: %d", exit_code);
+        printf("Exit code: %d", exit_code);
         proc_update_status(child_pid, EXITED, exit_code);
     }
     // Child did not exit normally
     if (WIFSIGNALED(w_status)) {
+
+        printf("Signal code: %d", WTERMSIG(w_status));
+
         proc_update_status(child_pid, EXITED, WTERMSIG(w_status));
     }
 }
