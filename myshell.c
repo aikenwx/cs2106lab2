@@ -319,7 +319,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
             }
 
         
-            int output_file = open("./a.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+            int output_file = open("./a.txt", O_WRONLY | O_CREAT | O_TRUNC);
 
             dup2(output_file, STDOUT_FILENO);
             close(output_file);
