@@ -347,7 +347,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
         }
         // print commmand
         for (int i = 0; i < num_tokens; i++) {
-            frprintf(stderr,"%s ", command[i]);
+            fprintf(stderr,"%s ", command[i]);
         }
         execv(program, command);
 
