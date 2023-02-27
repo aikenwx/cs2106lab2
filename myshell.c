@@ -313,25 +313,25 @@ static void command_exec(char* program, char** command, int num_tokens) {
             int index = get_index_of_token(command, num_tokens, ">");
             command[index + 1] = NULL;
 
-            // if (index == -1 || index == num_tokens - 1) {
-            //     fprintf(stderr, "Wrong command");
-            //     exit(1);
-            // }
+            if (index == -1 || index == num_tokens - 1) {
+                fprintf(stderr, "Wrong command");
+                exit(1);
+            }
 
         
             int output_file = open("./a.txt", O_WRONLY | O_CREAT | O_TRUNC);
 
-            // dup2(output_file, STDOUT_FILENO);
+            dup2(output_file, STDOUT_FILENO);
             close(output_file);
 
-            for (int i = 0; i < num_tokens; i++) {
-                fprintf(stderr, "%s \n ", command[i]);
-            }
+            // for (int i = 0; i < num_tokens; i++) {
+            //     fprintf(stderr, "%s \n ", command[i]);
+            // }
 
             execv(program, command);
         }
 
-        if (contains_error_redirect(command, num_tokens)) {
+        if (contains_error_redirect(command, num_tokens)){
             int index = get_index_of_token(command, num_tokens, "2>");
             command[index] = NULL;
 
