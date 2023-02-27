@@ -61,9 +61,6 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
 
         // May use WIFEXITED, WEXITSTATUS, WIFSIGNALED, WTERMSIG, WIFSTOPPED
 
-    // print exit status
-    printf("Exit df exitcode status: %d", exitCode);
-
     for (int i = 0; i < MAX_PROCESSES; i++) {
         if (pcb_table[i].pid == pid) {
             pcb_table[i].status = status;
@@ -301,7 +298,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
             int exit_status;
             waitpid(pid, &exit_status, WUNTRACED);
 
-            proc_update_status(pid, EXITED, exit_status);
+            proc_update_status(pid, EXITED, WEXITSTATUS(exit_status));
         }
 
         // Use waitpid() with WNOHANG when not blocking during wait and  waitpid() with WUNTRACED when parent needs to block due to wait
