@@ -292,17 +292,16 @@ static void command_exec(char* program, char** command, int num_tokens) {
         // use dup2 to redirect the stdin, stdout and stderr to the files
         // call execv() to execute the command in the child process
         if (contains_input_redirect(command, num_tokens)) {
-            // print log
             int index = get_index_of_token(command, num_tokens, "<");
             command[index] = NULL;
 
             if (index == -1 || index == num_tokens - 1) {
                 fprintf(stderr, "Wrong command");
             }
-            int input_file = open(command[index + 1], O_RDONLY);
+            int input_file = open(command[index + 1], O_RDONLY, O_SYNC);
 
             if (input_file == -1) {
-                fprintf(stderr, "%s does not exist", command[index + 1]);
+                fprintf(stderr, "%s does not exist\n", command[index + 1]);
                 exit(1);
             }
             dup2(input_file, STDIN_FILENO);
@@ -318,7 +317,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
                 exit(1);
             }
 
-            int output_file = open(command[index + 1], O_WRONLY | O_CREAT | O_TRUNC | O_SYNC, 0644);
+            int output_file = open(command[index + 1], O_WRONLY | O_CREAT | O_TRUNC | O_SYNC);
 
             dup2(output_file, STDOUT_FILENO);
             close(output_file);
@@ -332,7 +331,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
                 fprintf(stderr, "Wrong command");
                 exit(1);
             }
-            int error_file = open(command[index + 1], O_WRONLY | O_CREAT | O_TRUNC | O_SYNC, 0644);
+            int error_file = open(command[index + 1], O_WRONLY | O_CREAT | O_TRUNC | O_SYNC);
             dup2(error_file, STDERR_FILENO);
             close(error_file);
         }
