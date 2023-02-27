@@ -313,10 +313,10 @@ static void command_exec(char* program, char** command, int num_tokens) {
             int index = get_index_of_token(command, num_tokens, ">");
             command[index + 1] = NULL;
 
-            if (index == -1 || index == num_tokens - 1) {
-                fprintf(stderr, "Wrong command");
-                exit(1);
-            }
+            // if (index == -1 || index == num_tokens - 1) {
+            //     fprintf(stderr, "Wrong command");
+            //     exit(1);
+            // }
 
         
             int output_file = open("./a.txt", O_WRONLY | O_CREAT | O_TRUNC);
