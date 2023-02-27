@@ -291,18 +291,8 @@ static void command_exec(char* program, char** command, int num_tokens) {
         // use fopen/open file to open the file for reading/writing with  permission O_RDONLY, O_WRONLY, O_CREAT, O_TRUNC, O_SYNC and 0644
         // use dup2 to redirect the stdin, stdout and stderr to the files
         // call execv() to execute the command in the child process
-
-        // print command
-        for (int i = 0; i < num_tokens; i++) {
-            fprintf(stderr, "command: %s\n", command[i]);
-        }
-        // print contains_input_redirect()
-        fprintf(stderr, contains_error_redirect(command, num_tokens) ? "true\n" : "false\n");
-        fprintf(stderr, contains_input_redirect(command, num_tokens) ? "true\n" : "false\n");
-        fprintf(stderr, contains_output_redirect(command, num_tokens) ? "true\n" : "false\n");
         if (contains_input_redirect(command, num_tokens)) {
             // print log
-            fprintf(stderr, "contains input redirect");
             int index = get_index_of_token(command, num_tokens, "<");
             command[index] = NULL;
 
@@ -320,7 +310,6 @@ static void command_exec(char* program, char** command, int num_tokens) {
         }
 
         if (contains_output_redirect(command, num_tokens)) {
-            fprintf(stderr, "contains output redirect");
             int index = get_index_of_token(command, num_tokens, ">");
             command[index] = NULL;
 
@@ -333,9 +322,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
             close(output_file);
         }
 
-        if (contains_error_redirect(command, num_tokens)) {
-            fprintf(stderr,"contains error redirect");
-            
+        if (contains_error_redirect(command, num_tokens)) {            
             int index = get_index_of_token(command, num_tokens, "2>");
             command[index] = NULL;
 
