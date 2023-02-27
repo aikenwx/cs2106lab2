@@ -62,8 +62,6 @@ static int get_index_of_token(char** args, int num_args, char* token) {
     // returns index of token in args
     for (int i = 0; i < num_args; i++) {
         if (strcmp(args[i], token) == 0) {
-            fprintf(stderr, "%d \n ", i);
-            fprintf(stderr, "%s \n ", args[i]);
             return i;
         }
     }
