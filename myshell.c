@@ -329,9 +329,6 @@ static void command_exec(char* program, char** command, int num_tokens) {
             close(error_file);
         }
 
-        // print command string
-        printf("Command: %s", command);
-
         // else : ex1, ex2
         // call execv() to execute the command in the child process
         if (ends_with_ampersand(command, num_tokens)) {
