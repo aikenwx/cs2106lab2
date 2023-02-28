@@ -120,7 +120,7 @@ static void signal_handler(int signo) {
 
 /// TODO when piping file output, rememeber to make created file readable globally
 
-static void handle_child_process_exited_or_stopped(int signo) {
+static void handle_child_process_exited_or_stopped() {
     pid_t child_pid;
     int w_status;
 
