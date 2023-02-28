@@ -92,6 +92,8 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
     }
 }
 
+bool isStopped = false;
+
 /*******************************************************************************
  * Signal handler : ex4
  ******************************************************************************/
@@ -108,7 +110,7 @@ static void signal_handler(int signo) {
         // get the pid of the last process in PBT table
         child_pid = pcb_table[pcb_table_count - 1].pid;
                 printf("[%d] stopped\n", child_pid);
-
+        isStopped = true;
         proc_update_status(child_pid, STOPPED, -1);
         return;
     }
@@ -443,6 +445,10 @@ static void command_exec(char* program, char** command, int num_tokens) {
 
             // we initialize exit_status to -1 to indicate that the process has not exited yet
             int exit_status = -1;
+
+            if (isStopped) {
+                return;
+            }
             waitpid(pid, &exit_status, WUNTRACED);
 
             if (exit_status == -1) {
