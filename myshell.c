@@ -83,11 +83,7 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
     // Call everytime you need to update status and exit code of a process in PCBTable
 
     // May use WIFEXITED, WEXITSTATUS, WIFSIGNALED, WTERMSIG, WIFSTOPPED
-
-    printf("Updating status of process %d to %d with exit code %d\n", pid, status, exitCode);
     for (int i = 0; i < pcb_table_count; i++) {
-
-        printf("Checking process %d, status %d, exit code %d\n", pcb_table[i].pid, pcb_table[i].status, pcb_table[i].exitCode);
         if (pcb_table[i].pid == pid) {
             pcb_table[i].status = status;
             pcb_table[i].exitCode = exitCode;
@@ -148,8 +144,6 @@ static void handle_child_process_exited_or_stopped() {
     // Child did not exit normally
     if (WIFSIGNALED(w_status)) {
         printf("[%d] exited abnormally\n", child_pid);
-        printf("Signal number: %d\n", WTERMSIG(w_status));
-        printf("w_status: %d\n", w_status);
         proc_update_status(child_pid, EXITED, WTERMSIG(w_status));
     }
 
@@ -321,8 +315,6 @@ static void command_fg(char** command, int num_tokens) {
                 int w_status;
                 if (waitpid(pid_to_fg, &w_status, 0) > 0 && WIFEXITED(w_status)) {
                     int exit_code = WEXITSTATUS(w_status);
-                    printf("[%d] fg\n", pid_to_fg);
-
                     proc_update_status(pid_to_fg, EXITED, exit_code);
                 }
             }
@@ -421,7 +413,6 @@ static void command_exec(char* program, char** command, int num_tokens) {
         // PARENT PROCESS
         // register the process in process table
         add_new_proc(pid);
-        printf("test %d\n", pid);
         // If  child process need to execute in the background  (if & is present at the end )
         // print Child [PID] in background
         if (ends_with_ampersand(command, num_tokens)) {
@@ -430,22 +421,15 @@ static void command_exec(char* program, char** command, int num_tokens) {
         } else {
             // else wait for the child process to exit
 
-
-
+            // we initialize exit_status to -1 to indicate that the process has not exited yet
             int exit_status = -1;
-            printf("test2 %d\n", pid);
-
             waitpid(pid, &exit_status, WUNTRACED);
 
             if (exit_status == -1) {
-                // We have already waited once, and the process has already exited.
+                // if exit_status is -1, it means that the process has already been waited for
+                // and the process has already exited, so we do not need to do anything
                 return;
             }
-            printf("test3 %d\n", pid);
-
-
-            printf("exit status: %d",exit_status);
-            printf("[%d] not ampersand\n", pid);
 
             proc_update_status(pid, EXITED, WEXITSTATUS(exit_status));
         }
@@ -460,9 +444,6 @@ static void command_exec(char* program, char** command, int num_tokens) {
 
 static void command(char** command, int num_tokens) {
     /******* FILL IN THE CODE *******/
-    for (int i = 0; i < num_tokens; i++) {
-        printf("%s ", command[i]);
-    }
     char* program = command[0];
     // if command is "info" call command_info()             : ex1
     if (strcmp(program, "info") == 0) {
