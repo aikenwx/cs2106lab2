@@ -121,14 +121,6 @@ static void signal_handler(int signo) {
 
 }
 
-static void handle_ctrl_z() {
-    printf("ctrl z");
-    signal_handler(SIGTSTP);
-}
-
-static void handle_ctrl_c() {
-    signal_handler(SIGINT);
-}
 
 static void handle_child_process_exited_or_stopped() {
     pid_t child_pid;
@@ -485,8 +477,7 @@ void my_init(void) {
 
     // anything else you require
     pcb_table_count = 0;
-    signal(SIGTSTP, handle_ctrl_z);
-    signal(SIGINT, handle_ctrl_c);
+    signal(SIGTSTP, signal_handler);
     // signal(SIGCHLD, handle_child_process_exited_or_stopped);
 
 
