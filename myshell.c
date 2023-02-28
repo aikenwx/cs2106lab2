@@ -84,11 +84,11 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
 
     // May use WIFEXITED, WEXITSTATUS, WIFSIGNALED, WTERMSIG, WIFSTOPPED
     for (int i = 0; i < MAX_PROCESSES; i++) {
+            printf("[%d] %d %d\n", pcb_table[i].pid, pcb_table[i].status, pcb_table[i].exitCode);
+
         if (pcb_table[i].pid == pid) {
             pcb_table[i].status = status;
             pcb_table[i].exitCode = exitCode;
-            printf("[%d] %d %d\n", pid, pcb_table[pid].status, pcb_table[pid].exitCode);
-
             return;
         }
     }
