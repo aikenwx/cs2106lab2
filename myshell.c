@@ -33,9 +33,6 @@ static bool ends_with_ampersand(char** args, int num_args) {
 }
 
 static bool contains_output_redirect(char** args, int num_args) {
-    
-    
-    
     for (int i = 0; i < num_args; i++) {
         if (args[i] && strcmp(args[i], ">") == 0) {
             return true;
@@ -97,13 +94,11 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
  * Signal handler : ex4
  ******************************************************************************/
 
-
-
 static void signal_handler(int signo) {
     if (signo == SIGINT && getpid() != parent_pid) {
         // get latest pid in pcb_table
         pid_t pid = pcb_table[pcb_table_count - 1].pid;
-        kill(pid, SIGINT);        
+        kill(pid, SIGINT);
     } else if (signo == SIGTSTP && getpid() != parent_pid) {
         // get latest pid in pcb_table
         pid_t pid = pcb_table[pcb_table_count - 1].pid;
@@ -117,30 +112,24 @@ static void signal_handler(int signo) {
         printf("[%d] stopped", pcb_table[pcb_table_count - 1].pid);
     }
 
-// Use the signo to identy ctrl-Z or ctrl-C and print “[PID] stopped or print “[PID] interrupted accordingly.
-// Update the status of the process in the PCB table
-
+    // Use the signo to identy ctrl-Z or ctrl-C and print “[PID] stopped or print “[PID] interrupted accordingly.
+    // Update the status of the process in the PCB table
 }
 
 /// TODO when piping file output, rememeber to make created file readable globally
 
-
-
 static void handle_child_process_exited_or_stopped(int signo) {
-
     printf("signo = %d\n", signo);
 
     if (signo == SIGCHLD) {
         printf("SIGCHLD\n");
-    } 
-    
+    }
+
     pid_t child_pid;
     int w_status;
 
-
     child_pid = waitpid(-1, &w_status, WNOHANG);
 
-    
     // Child exited under control
     if (WIFEXITED(w_status)) {
         proc_update_status(child_pid, EXITED, WEXITSTATUS(w_status));
@@ -375,11 +364,9 @@ static void command_exec(char* program, char** command, int num_tokens) {
 
             dup2(output_file, STDOUT_FILENO);
             close(output_file);
+        }
 
-        } 
-
-        if (contains_error_redirect(command, num_tokens)){
-
+        if (contains_error_redirect(command, num_tokens)) {
             int index = get_index_of_token(command, num_tokens, "2>");
             command[index] = NULL;
 
@@ -417,7 +404,6 @@ static void command_exec(char* program, char** command, int num_tokens) {
         if (ends_with_ampersand(command, num_tokens)) {
             printf("Child [%d] in background\n", pid);
             waitpid(pid, NULL, WNOHANG);
-
 
         } else {
             // else wait for the child process to exit
@@ -476,6 +462,8 @@ void my_init(void) {
     // anything else you require
     pcb_table_count = 0;
     parent_pid = getpid();
+    signal(SIGTSTP, signal_handler);
+    signal(SIGINT, signal_handler);
     signal(SIGCHLD, handle_child_process_exited_or_stopped);
 }
 
