@@ -108,6 +108,9 @@ static void signal_handler(int signo) {
         proc_update_status(pid, TERMINATING, 2);
     }
 
+    // print the updated process, status and exit code
+    printf("[%d] %d %d\n", pid, pcb_table[pid].status, pcb_table[pid].exitCode);
+
 // Use the signo to identy ctrl-Z or ctrl-C and print “[PID] stopped or print “[PID] interrupted accordingly.
 // Update the status of the process in the PCB table
 
