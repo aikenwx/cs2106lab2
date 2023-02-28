@@ -113,7 +113,7 @@ static void signal_handler(int signo) {
         proc_update_status(child_pid, EXITED, 2);
     } else if (signo == SIGTSTP && child_pid != -1) {
         printf("[%d] stopped\n", child_pid);
-        proc_update_status(child_pid, EXITED, 2);
+        proc_update_status(child_pid, STOPPED, -1);
     }
 
 // Use the signo to identy ctrl-Z or ctrl-C and print “[PID] stopped or print “[PID] interrupted accordingly.
@@ -480,7 +480,7 @@ void my_init(void) {
     signal(SIGTSTP, signal_handler);
     signal(SIGINT, signal_handler);
 
-    // signal(SIGCHLD, handle_child_process_exited_or_stopped);
+    signal(SIGCHLD, handle_child_process_exited_or_stopped);
 
 
 
