@@ -99,10 +99,10 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
 
 static void signal_handler(int signo) {
     if (signo == SIGTSTP) {
-        printf("[%d] stopped", getpid());
+        printf("[%d] stopped\n", getpid());
         proc_update_status(getpid(), STOPPED, 2);
     } else if (signo == SIGINT) {
-        printf("[%d] interrupted", getpid());
+        printf("[%d] interrupted\n", getpid());
         proc_update_status(getpid(), TERMINATING, 2);
     }
 
