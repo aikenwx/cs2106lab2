@@ -96,7 +96,6 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
  * Signal handler : ex4
  ******************************************************************************/
 
-bool has_already_waited = false;
 
 static void signal_handler(int signo) {
     pid_t child_pid;
@@ -117,13 +116,13 @@ static void signal_handler(int signo) {
         proc_update_status(child_pid, EXITED, 2);
     }
 
-    has_already_waited = true;  
 // Use the signo to identy ctrl-Z or ctrl-C and print “[PID] stopped or print “[PID] interrupted accordingly.
 // Update the status of the process in the PCB table
 
 }
 
 static void handle_ctrl_z() {
+    printf("ctrl z");
     signal_handler(SIGTSTP);
 }
 
