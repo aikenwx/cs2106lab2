@@ -422,6 +422,8 @@ static void command_exec(char* program, char** command, int num_tokens) {
         } else {
             // else wait for the child process to exit
             int exit_status;
+            printf("test2 %d\n", pid);
+
             waitpid(pid, &exit_status, WUNTRACED);
 
             printf("exit status: %d",exit_status);
