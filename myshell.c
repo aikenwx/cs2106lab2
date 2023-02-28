@@ -291,6 +291,10 @@ static void command_exec(char* program, char** command, int num_tokens) {
         // use fopen/open file to open the file for reading/writing with  permission O_RDONLY, O_WRONLY, O_CREAT, O_TRUNC, O_SYNC and 0644
         // use dup2 to redirect the stdin, stdout and stderr to the files
         // call execv() to execute the command in the child process
+        fprintf(stderr, "contains %s %s %s", contains_error_redirect(command, num_tokens) ? "error" : "no error",
+                contains_input_redirect(command, num_tokens) ? "input" : "no input",
+                contains_output_redirect(command, num_tokens) ? "output" : "no output");
+        
         if (contains_input_redirect(command, num_tokens)) {
             int index = get_index_of_token(command, num_tokens, "<");
             command[index] = NULL;
