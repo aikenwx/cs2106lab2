@@ -97,7 +97,7 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
  ******************************************************************************/
 
 static void signal_handler(int signo) {
-    printf("pid %d signo %d\n", getpid(), signo);
+    printf("pid %d signo %d parentpid %d\n", getpid(), signo,parent_pid);
     if (signo == SIGINT && getpid() != parent_pid) {
         // get latest pid in pcb_table
         printf("SIGINT");
