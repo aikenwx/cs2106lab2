@@ -28,7 +28,7 @@ struct PCBTable pcb_table[MAX_PROCESSES];
 int pcb_table_count;
 
 static bool ends_with_ampersand(char** args, int num_args) {
-    return num_args > 0 && strcmp(args[num_args - 1], "&") == 0;
+    return num_args > 0 && args[num_args - 1] && strcmp(args[num_args - 1], "&") == 0;
 }
 
 static bool contains_output_redirect(char** args, int num_args) {
