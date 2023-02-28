@@ -99,6 +99,10 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
 static void signal_handler(int signo) {
     pid_t child_pid;
     int w_status;
+    if (signo == SIGTSTP) {
+        printf("signal handler called");
+        return;
+    }
     printf("signal handler called");
 
     child_pid = wait(&w_status);
@@ -122,10 +126,9 @@ static void signal_handler(int signo) {
 static void handle_child_process_exited_or_stopped() {
     pid_t child_pid;
     int w_status;
+    child_pid = wait(&w_status);
 
-    printf("handle_child_process_exited_or_stopped called");
-    child_pid = waitpid(-1, &w_status, WNOHANG);
-    printf("child_pid: %d", child_pid);
+
     if (child_pid == -1) {
         // PID of -1 means no current child process
         return;
