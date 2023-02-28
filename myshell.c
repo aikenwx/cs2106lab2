@@ -27,6 +27,7 @@
 struct PCBTable pcb_table[MAX_PROCESSES];
 int pcb_table_count;
 
+int parent_pid;
 static bool ends_with_ampersand(char** args, int num_args) {
     return num_args > 0 && args[num_args - 1] && strcmp(args[num_args - 1], "&") == 0;
 }
@@ -77,20 +78,6 @@ static void add_new_proc(pid_t pid) {
     pcb_table[pcb_table_count].exitCode = -1;
     pcb_table_count++;
 }
-
-/*******************************************************************************
- * Signal handler : ex4
- ******************************************************************************/
-
-// static void signal_handler(int signo) {
-
-// Use the signo to identy ctrl-Z or ctrl-C and print “[PID] stopped or print “[PID] interrupted accordingly.
-// Update the status of the process in the PCB table
-
-// }
-
-/// TODO when piping file output, rememeber to make created file readable globally
-
 static void proc_update_status(pid_t pid, int status, int exitCode) {
     /******* FILL IN THE CODE *******/
 
@@ -106,6 +93,38 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
         }
     }
 }
+/*******************************************************************************
+ * Signal handler : ex4
+ ******************************************************************************/
+
+
+
+static void signal_handler(int signo) {
+    if (signo == SIGINT && getpid() != parent_pid) {
+        // get latest pid in pcb_table
+        pid_t pid = pcb_table[pcb_table_count - 1].pid;
+        kill(pid, SIGINT);        
+    } else if (signo == SIGTSTP && getpid() != parent_pid) {
+        // get latest pid in pcb_table
+        pid_t pid = pcb_table[pcb_table_count - 1].pid;
+        kill(pid, SIGTSTP);
+
+        proc_update_status(pid, STOPPED, -1);
+
+    } else if (signo == SIGINT && getpid() == parent_pid) {
+        printf("[%d] interrrupted", pcb_table[pcb_table_count - 1].pid);
+    } else if (signo == SIGTSTP && getpid() == parent_pid) {
+        printf("[%d] stopped", pcb_table[pcb_table_count - 1].pid);
+    }
+
+// Use the signo to identy ctrl-Z or ctrl-C and print “[PID] stopped or print “[PID] interrupted accordingly.
+// Update the status of the process in the PCB table
+
+}
+
+/// TODO when piping file output, rememeber to make created file readable globally
+
+
 
 static void handle_child_process_exited_or_stopped(int signo) {
 
@@ -117,7 +136,11 @@ static void handle_child_process_exited_or_stopped(int signo) {
     
     pid_t child_pid;
     int w_status;
-    child_pid = wait(&w_status);
+
+
+    child_pid = waitpid(-1, &w_status, WNOHANG);
+
+    
     // Child exited under control
     if (WIFEXITED(w_status)) {
         proc_update_status(child_pid, EXITED, WEXITSTATUS(w_status));
@@ -266,10 +289,29 @@ static void command_terminate(char** command, int num_tokens) {
     }
 }
 
-static void command_fg(/* pass necessary parameters*/) {
+static void command_fg(char** command, int num_tokens) {
     /******* FILL IN THE CODE *******/
 
-    printf("fg called\n");
+    // printf("fg called\n");
+
+    if (num_tokens != 2) {
+        fprintf(stderr, "Wrong command\n");
+        return;
+    }
+
+    // Find the {PID} in the PCBTable
+    pid_t pid_to_fg = atoi(command[1]);
+    for (int i = 0; i < pcb_table_count; i++) {
+        if (pcb_table[i].pid == pid_to_fg) {
+            // If the process indicated by the process id is STOPPED, send SIGCONT to it.
+            if (pcb_table[i].status == STOPPED) {
+                proc_update_status(pid_to_fg, RUNNING, -1);
+                kill(pid_to_fg, SIGCONT);
+            }
+            break;
+        }
+    }
+
     // if the {PID} status is stopped
     // Print “[PID] resumed”
     // Use kill() to send SIGCONT to {PID} to get it continue and wait for it
@@ -375,6 +417,8 @@ static void command_exec(char* program, char** command, int num_tokens) {
         if (ends_with_ampersand(command, num_tokens)) {
             printf("Child [%d] in background\n", pid);
             waitpid(pid, NULL, WNOHANG);
+
+
         } else {
             // else wait for the child process to exit
             int exit_status;
@@ -412,7 +456,7 @@ static void command(char** command, int num_tokens) {
     }
     // if command is "fg" call command_fg()                 : ex4
     if (strcmp(program, "fg") == 0) {
-        command_fg();
+        command_fg(command, num_tokens);
         return;
     }
     // call command_exec() for all other commands           : ex1, ex2, ex3
@@ -431,6 +475,7 @@ void my_init(void) {
 
     // anything else you require
     pcb_table_count = 0;
+    parent_pid = getpid();
     signal(SIGCHLD, handle_child_process_exited_or_stopped);
 }
 
