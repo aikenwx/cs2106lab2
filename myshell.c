@@ -510,8 +510,8 @@ void my_quit(void) {
     /******* FILL IN THE CODE *******/
     // Kill every process in the PCB that is either stopped or running
 
-    for (int i = 0; i < MAX_PROCESSES; i++) {
-        if (pcb_table[i].status == RUNNING) {
+    for (int i = 0; i < pcb_table_count; i++) {
+        if (pcb_table[i].status == RUNNING || pcb_table[i].status == STOPPED) {
             kill(pcb_table[i].pid, SIGTERM);
             printf("Killing [%d]\n", pcb_table[i].pid);
         }
