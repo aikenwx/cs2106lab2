@@ -99,10 +99,12 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
 static void signal_handler(int signo) {
     if (signo == SIGINT && getpid() != parent_pid) {
         // get latest pid in pcb_table
+        printf("SIGINT");
         pid_t pid = pcb_table[pcb_table_count - 1].pid;
         kill(pid, SIGINT);
     } else if (signo == SIGTSTP && getpid() != parent_pid) {
         // get latest pid in pcb_table
+        printf("SIGTSTP");
         pid_t pid = pcb_table[pcb_table_count - 1].pid;
         kill(pid, SIGTSTP);
 
