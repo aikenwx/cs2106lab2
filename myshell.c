@@ -110,9 +110,9 @@ static void signal_handler(int signo) {
     } else if (signo == SIGINT && child_pid == 0) {
         proc_update_status(child_pid, TERMINATING, 2);
         exit(2);
-    } else if (signo == SIGINT) {
+    } else if (signo == SIGINT && child_pid == -1) {
         printf("[%d] interrupted\n", child_pid);
-    } else if (signo == SIGTSTP) {
+    } else if (signo == SIGTSTP && child_pid == -1) {
         printf("[%d] stopped\n", child_pid);
     }
     
@@ -141,7 +141,6 @@ static void handle_child_process_exited_or_stopped() {
     }
     // Child did not exit normally
     if (WIFSIGNALED(w_status)) {
-
         printf("[%d] exited abnormally\n", child_pid);
         proc_update_status(child_pid, EXITED, WTERMSIG(w_status));
     }
