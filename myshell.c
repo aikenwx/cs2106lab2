@@ -68,6 +68,9 @@ static bool contains_input_redirect(char** args, int num_args) {
 static int get_index_of_token(char** args, int num_args, char* token) {
     // returns index of token in args
     for (int i = 0; i < num_args; i++) {
+
+        // print args[i]
+        fprintf(stderr, "finder args[%d] = %s", i, args[i]);
         if (strcmp(args[i], token) == 0) {
             return i;
         }
