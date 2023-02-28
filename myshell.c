@@ -100,10 +100,16 @@ static void signal_handler(int signo) {
     pid_t child_pid;
     int w_status;
     if (signo == SIGTSTP) {
-        printf("[%d] interrupted\n", getpid());
-        child_pid = waitpid(-1, &w_status, WNOHANG);
+        // printf("signal handler called");
+        // child_pid = waitpid(-1, &w_status, WNOHANG);
+        // printf("child_pid: %d", child_pid);
+        // printf("child_pid: %d", getpid());
 
-        printf("child_pid: %d", child_pid);
+        // get the pid of the last process in PBT table
+        child_pid = pcb_table[pcb_table_count - 1].pid;
+                printf("[%d] stopped\n", child_pid);
+
+        proc_update_status(child_pid, STOPPED, -1);
         return;
     }
     printf("signal handler called");
@@ -130,19 +136,19 @@ static void handle_child_process_exited_or_stopped(int signo) {
     pid_t child_pid;
     int w_status;
 
-    // if (signo == SIGCHLD) {
-    //     // printf("signal handler called");
-    //     // child_pid = waitpid(-1, &w_status, WNOHANG);
-    //     // printf("child_pid: %d", child_pid);
-    //     // printf("child_pid: %d", getpid());
+    if (signo == SIGCHLD) {
+        // // printf("signal handler called");
+        // // child_pid = waitpid(-1, &w_status, WNOHANG);
+        // // printf("child_pid: %d", child_pid);
+        // // printf("child_pid: %d", getpid());
 
-    //     // get the pid of the last process in PBT table
-    //     child_pid = pcb_table[pcb_table_count - 1].pid;
-    //             printf("[%d] stopped\n", child_pid);
+        // // get the pid of the last process in PBT table
+        // child_pid = pcb_table[pcb_table_count - 1].pid;
+        //         printf("[%d] stopped\n", child_pid);
 
-    //     proc_update_status(child_pid, STOPPED, -1);
-    //     return;
-    // }
+        // proc_update_status(child_pid, STOPPED, -1);
+        return;
+    }
 
     child_pid = wait(&w_status);
 
