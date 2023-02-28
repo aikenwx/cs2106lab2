@@ -103,14 +103,11 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
 static void signal_handler(int signo) {
 
     pid_t pid = getpid();
-    if (signo == SIGTSTP) {
+    if (signo == SIGTSTP && pid != 0) {
         printf("[%d] stopped\n", pid);
-
-
         proc_update_status(pid, STOPPED, 2);
-
         exit(2);
-    } else if (signo == SIGINT) {
+    } else if (signo == SIGINT && pid != 0) {
         printf("[%d] interrupted\n", pid);
         proc_update_status(pid, TERMINATING, 2);
 
