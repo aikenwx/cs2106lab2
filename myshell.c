@@ -295,7 +295,11 @@ static void command_exec(char* program, char** command, int num_tokens) {
                 contains_input_redirect(command, num_tokens) ? "input" : "no input",
                 contains_output_redirect(command, num_tokens) ? "output" : "no output");
         
+        // log 
+        fprintf(stderr, "test1");
         if (contains_input_redirect(command, num_tokens)) {
+                    fprintf(stderr, "test2");
+
             int index = get_index_of_token(command, num_tokens, "<");
             command[index] = NULL;
 
@@ -311,8 +315,11 @@ static void command_exec(char* program, char** command, int num_tokens) {
             dup2(input_file, STDIN_FILENO);
             close(input_file);
         }
+        fprintf(stderr, "test3");
 
         if (contains_output_redirect(command, num_tokens)) {
+                    fprintf(stderr, "test4");
+
             int index = get_index_of_token(command, num_tokens, ">");
             fprintf(stderr, "test %s\n", command[index + 1]);
 
