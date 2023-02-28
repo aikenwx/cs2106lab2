@@ -100,8 +100,7 @@ static void signal_handler(int signo) {
     pid_t child_pid;
     int w_status;
     if (signo == SIGTSTP) {
-                printf("[%d] interrupted\n", getpid());
-
+        printf("[%d] interrupted\n", getpid());
         return;
     }
     printf("signal handler called");
@@ -130,6 +129,7 @@ static void handle_child_process_exited_or_stopped(int signo) {
 
     if (signo == SIGCHLD) {
         printf("signal handler called");
+
         return;
     }
 
@@ -484,6 +484,8 @@ void my_init(void) {
 
     // anything else you require
     pcb_table_count = 0;
+
+    printf("parrent pid: %d", getpid());
     signal(SIGTSTP, signal_handler);
     signal(SIGINT, signal_handler);
 
