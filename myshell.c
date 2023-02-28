@@ -101,15 +101,16 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
  ******************************************************************************/
 
 static void signal_handler(int signo) {
-
-    pid_t pid = getpid();
-    if (signo == SIGTSTP && pid != 0) {
-        printf("[%d] stopped\n", pid);
-        proc_update_status(pid, STOPPED, 2);
+    pid_t child_pid;
+    int w_status;
+    child_pid = wait(&w_status);
+    if (signo == SIGTSTP && child_pid == 0) {
+        printf("[%d] stopped\n", child_pid);
+        proc_update_status(child_pid, STOPPED, 2);
         exit(2);
-    } else if (signo == SIGINT && pid != 0) {
-        printf("[%d] interrupted\n", pid);
-        proc_update_status(pid, TERMINATING, 2);
+    } else if (signo == SIGINT && child_pid == 0) {
+        printf("[%d] interrupted\n", child_pid);
+        proc_update_status(child_pid, TERMINATING, 2);
 
         exit(2);
     }
@@ -143,6 +144,18 @@ static void handle_child_process_exited_or_stopped() {
         printf("[%d] exited abnormally\n", child_pid);
         proc_update_status(child_pid, EXITED, WEXITSTATUS(w_status));
     }
+
+    if (WIFSTOPPED(w_status)) {
+        printf("[%d] stopped\n", child_pid);
+        proc_update_status(child_pid, STOPPED, WEXITSTATUS(w_status));
+    }
+
+    if (WIFCONTINUED(w_status)) {
+        printf("[%d] continued\n", child_pid);
+        proc_update_status(child_pid, RUNNING, WEXITSTATUS(w_status));
+    }
+
+    if (WIF)
 }
 
 /*******************************************************************************
