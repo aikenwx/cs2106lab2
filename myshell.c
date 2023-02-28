@@ -87,12 +87,13 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
         if (pcb_table[i].pid == pid) {
             pcb_table[i].status = status;
             pcb_table[i].exitCode = exitCode;
-            // return;
+            printf("[%d] %d %d\n", pid, pcb_table[pid].status, pcb_table[pid].exitCode);
+
+            return;
         }
     }
 
     // print the updated process, status and exit code
-    printf("[%d] %d %d\n", pid, pcb_table[pid].status, pcb_table[pid].exitCode);
 }
 
 /*******************************************************************************
@@ -100,7 +101,6 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
  ******************************************************************************/
 
 static void signal_handler(int signo) {
-
     pid_t pid = getpid();
     if (signo == SIGTSTP) {
         printf("[%d] stopped\n", pid);
@@ -113,9 +113,8 @@ static void signal_handler(int signo) {
     // print the updated process, status and exit code
     printf("[%d] %d %d\n", pid, pcb_table[pid].status, pcb_table[pid].exitCode);
 
-// Use the signo to identy ctrl-Z or ctrl-C and print “[PID] stopped or print “[PID] interrupted accordingly.
-// Update the status of the process in the PCB table
-
+    // Use the signo to identy ctrl-Z or ctrl-C and print “[PID] stopped or print “[PID] interrupted accordingly.
+    // Update the status of the process in the PCB table
 }
 
 static void handle_ctrl_z() {
@@ -462,8 +461,6 @@ void my_init(void) {
     // anything else you require
     pcb_table_count = 0;
     signal(SIGCHLD, handle_child_process_exited_or_stopped);
-
-
 }
 
 void my_process_command(size_t num_tokens, char** tokens) {
