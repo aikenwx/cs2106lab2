@@ -32,6 +32,9 @@ static bool ends_with_ampersand(char** args, int num_args) {
 }
 
 static bool contains_output_redirect(char** args, int num_args) {
+    
+    
+    
     for (int i = 0; i < num_args; i++) {
         if (args[i] && strcmp(args[i], ">") == 0) {
             return true;
@@ -75,6 +78,17 @@ static void add_new_proc(pid_t pid) {
     pcb_table_count++;
 }
 
+/*******************************************************************************
+ * Signal handler : ex4
+ ******************************************************************************/
+
+// static void signal_handler(int signo) {
+
+// Use the signo to identy ctrl-Z or ctrl-C and print “[PID] stopped or print “[PID] interrupted accordingly.
+// Update the status of the process in the PCB table
+
+// }
+
 /// TODO when piping file output, rememeber to make created file readable globally
 
 static void proc_update_status(pid_t pid, int status, int exitCode) {
@@ -83,7 +97,8 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
     // Call everytime you need to update status and exit code of a process in PCBTable
 
     // May use WIFEXITED, WEXITSTATUS, WIFSIGNALED, WTERMSIG, WIFSTOPPED
-    for (int i = 0; i < pcb_table_count; i++) {
+
+    for (int i = 0; i < MAX_PROCESSES; i++) {
         if (pcb_table[i].pid == pid) {
             pcb_table[i].status = status;
             pcb_table[i].exitCode = exitCode;
@@ -92,82 +107,16 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
     }
 }
 
-bool isStopped = false;
-
-/*******************************************************************************
- * Signal handler : ex4
- ******************************************************************************/
-
-static void signal_handler(int signo) {
+static void handle_child_process_exited_or_stopped() {
     pid_t child_pid;
     int w_status;
-    if (signo == SIGTSTP) {
-        // printf("signal handler called");
-        // child_pid = waitpid(-1, &w_status, WNOHANG);
-        // printf("child_pid: %d", child_pid);
-        // printf("child_pid: %d", getpid());
-
-        // get the pid of the last process in PBT table
-        child_pid = pcb_table[pcb_table_count - 1].pid;
-                printf("[%d] stopped\n", child_pid);
-        isStopped = true;
-        proc_update_status(child_pid, STOPPED, -1);
-        return;
-    }
-    printf("signal handler called");
-
     child_pid = wait(&w_status);
-
-    if (signo == SIGTSTP && child_pid == 0) {
-        exit(2);
-    } else if (signo == SIGINT && child_pid == 0) {
-        exit(2);
-    } else if (signo == SIGINT && child_pid != -1) {
-        printf("[%d] interrupted\n", child_pid);
-        proc_update_status(child_pid, EXITED, 2);
-    } else if (signo == SIGTSTP && child_pid != -1) {
-        printf("[%d] stopped\n", child_pid);
-        proc_update_status(child_pid, STOPPED, -1);
-    }
-
-    // Use the signo to identy ctrl-Z or ctrl-C and print “[PID] stopped or print “[PID] interrupted accordingly.
-    // Update the status of the process in the PCB table
-}
-
-static void handle_child_process_exited_or_stopped(int signo) {
-    pid_t child_pid;
-    int w_status;
-
-    if (signo == SIGCHLD) {
-        // // printf("signal handler called");
-        // // child_pid = waitpid(-1, &w_status, WNOHANG);
-        // // printf("child_pid: %d", child_pid);
-        // // printf("child_pid: %d", getpid());
-
-        // // get the pid of the last process in PBT table
-        // child_pid = pcb_table[pcb_table_count - 1].pid;
-        //         printf("[%d] stopped\n", child_pid);
-
-        // proc_update_status(child_pid, STOPPED, -1);
-        return;
-    }
-
-    child_pid = wait(&w_status);
-
-
-    if (child_pid == -1) {
-        // PID of -1 means no current child process
-        return;
-    }
     // Child exited under control
     if (WIFEXITED(w_status)) {
-        printf("[%d] exited under control\n", child_pid);
-
         proc_update_status(child_pid, EXITED, WEXITSTATUS(w_status));
     }
     // Child did not exit normally
     if (WIFSIGNALED(w_status)) {
-        printf("[%d] exited abnormally\n", child_pid);
         proc_update_status(child_pid, EXITED, WTERMSIG(w_status));
     }
 }
@@ -278,8 +227,6 @@ static void command_wait(char** command, int num_tokens) {
                 int w_status;
                 if (waitpid(pid_to_wait, &w_status, 0) > 0 && WIFEXITED(w_status)) {
                     int exit_code = WEXITSTATUS(w_status);
-
-                    printf("[%d] wait exited under control\n", pid_to_wait);
                     proc_update_status(pid_to_wait, EXITED, exit_code);
                 }
             }
@@ -305,9 +252,6 @@ static void command_terminate(char** command, int num_tokens) {
             if (pcb_table[i].status == RUNNING) {
                 // If kill returns 0, it means the signal was sent successfully
                 kill(pid_to_terminate, SIGTERM);
-
-                // log
-                printf("[%d] Terminating\n", pid_to_terminate);
                 proc_update_status(pid_to_terminate, TERMINATING, -1);
             }
             break;
@@ -315,34 +259,14 @@ static void command_terminate(char** command, int num_tokens) {
     }
 }
 
-static void command_fg(char** command, int num_tokens) {
+static void command_fg(/* pass necessary parameters*/) {
     /******* FILL IN THE CODE *******/
 
+    printf("fg called\n");
     // if the {PID} status is stopped
     // Print “[PID] resumed”
     // Use kill() to send SIGCONT to {PID} to get it continue and wait for it
     // After the process terminate, update status and exit code (call proc_update_status())
-
-    if (num_tokens != 2) {
-        fprintf(stderr, "Wrong command\n");
-        return;
-    }
-    pid_t pid_to_fg = atoi(command[1]);
-
-    for (int i = 0; i < pcb_table_count; i++) {
-        if (pcb_table[i].pid == pid_to_fg) {
-            if (pcb_table[i].status == STOPPED) {
-                printf("[%d] resumed\n", pid_to_fg);
-                kill(pid_to_fg, SIGCONT);
-                int w_status;
-                if (waitpid(pid_to_fg, &w_status, 0) > 0 && WIFEXITED(w_status)) {
-                    int exit_code = WEXITSTATUS(w_status);
-                    proc_update_status(pid_to_fg, EXITED, exit_code);
-                }
-            }
-            break;
-        }
-    }
 }
 
 /*******************************************************************************
@@ -351,6 +275,7 @@ static void command_fg(char** command, int num_tokens) {
 
 static void command_exec(char* program, char** command, int num_tokens) {
     /******* FILL IN THE CODE *******/
+
     // check if program exists and is executable : use access()
     if (access(program, F_OK) != 0 && access(program, X_OK) != 0) {
         fprintf(stderr, "%s not found \n", program);
@@ -401,9 +326,11 @@ static void command_exec(char* program, char** command, int num_tokens) {
 
             dup2(output_file, STDOUT_FILENO);
             close(output_file);
-        }
 
-        if (contains_error_redirect(command, num_tokens)) {
+        } 
+
+        if (contains_error_redirect(command, num_tokens)){
+
             int index = get_index_of_token(command, num_tokens, "2>");
             command[index] = NULL;
 
@@ -435,6 +362,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
         // PARENT PROCESS
         // register the process in process table
         add_new_proc(pid);
+
         // If  child process need to execute in the background  (if & is present at the end )
         // print Child [PID] in background
         if (ends_with_ampersand(command, num_tokens)) {
@@ -442,21 +370,9 @@ static void command_exec(char* program, char** command, int num_tokens) {
             waitpid(pid, NULL, WNOHANG);
         } else {
             // else wait for the child process to exit
-
-            // we initialize exit_status to -1 to indicate that the process has not exited yet
-            int exit_status = -1;
-
-            if (isStopped) {
-                return;
-            }
+            int exit_status;
             waitpid(pid, &exit_status, WUNTRACED);
 
-            if (exit_status == -1) {
-                // if exit_status is -1, it means that the process has already been waited for
-                // and the process has already exited, so we do not need to do anything
-                return;
-            }
-            printf("Child [%d] exited with code %d", pid, WEXITSTATUS(exit_status));
             proc_update_status(pid, EXITED, WEXITSTATUS(exit_status));
         }
 
@@ -470,6 +386,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
 
 static void command(char** command, int num_tokens) {
     /******* FILL IN THE CODE *******/
+
     char* program = command[0];
     // if command is "info" call command_info()             : ex1
     if (strcmp(program, "info") == 0) {
@@ -488,7 +405,7 @@ static void command(char** command, int num_tokens) {
     }
     // if command is "fg" call command_fg()                 : ex4
     if (strcmp(program, "fg") == 0) {
-        command_fg(command, num_tokens);
+        command_fg();
         return;
     }
     // call command_exec() for all other commands           : ex1, ex2, ex3
@@ -507,11 +424,6 @@ void my_init(void) {
 
     // anything else you require
     pcb_table_count = 0;
-
-    printf("parrent pid: %d", getpid());
-    signal(SIGTSTP, signal_handler);
-    signal(SIGINT, signal_handler);
-
     signal(SIGCHLD, handle_child_process_exited_or_stopped);
 }
 
@@ -547,7 +459,7 @@ void my_quit(void) {
     // Kill every process in the PCB that is either stopped or running
 
     for (int i = 0; i < MAX_PROCESSES; i++) {
-        if (pcb_table[i].status == RUNNING || pcb_table[i].status == STOPPED) {
+        if (pcb_table[i].status == RUNNING) {
             kill(pcb_table[i].pid, SIGTERM);
             printf("Killing [%d]\n", pcb_table[i].pid);
         }
