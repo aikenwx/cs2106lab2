@@ -436,6 +436,11 @@ static void command_exec(char* program, char** command, int num_tokens) {
             printf("test2 %d\n", pid);
 
             waitpid(pid, &exit_status, WUNTRACED);
+
+            if (exit_status == -1) {
+                // We have already waited once, and the process has already exited.
+                return;
+            }
             printf("test3 %d\n", pid);
 
 
