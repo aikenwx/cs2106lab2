@@ -124,7 +124,7 @@ static void handle_child_process_exited_or_stopped() {
     int w_status;
 
     printf("handle_child_process_exited_or_stopped called");
-    child_pid = waitpid(-1, &w_status, WNOHANG);
+    child_pid = wait(&w_status);
 
 
     if (child_pid == -1) {
