@@ -425,6 +425,8 @@ static void command_exec(char* program, char** command, int num_tokens) {
             printf("test2 %d\n", pid);
 
             waitpid(pid, &exit_status, WUNTRACED);
+            printf("test3 %d\n", pid);
+
 
             printf("exit status: %d",exit_status);
             printf("[%d] not ampersand\n", pid);
