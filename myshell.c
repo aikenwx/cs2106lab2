@@ -99,17 +99,15 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
 static void signal_handler(int signo) {
     pid_t child_pid;
     int w_status;
-    if (signo == SIGTSTP) {
-        printf("signal handler called");
-        return;
-    }
-    printf("signal handler called");
+    // if (signo == SIGTSTP) {
+    //     printf("signal handler called");
+    //     return;
+    // }
+    // printf("signal handler called");
 
     child_pid = wait(&w_status);
 
-    if (signo == SIGTSTP && child_pid == 0) {
-        exit(2);
-    } else if (signo == SIGINT && child_pid == 0) {
+    if (signo == SIGINT && child_pid == 0) {
         exit(2);
     } else if (signo == SIGINT && child_pid != -1) {
         printf("[%d] interrupted\n", child_pid);
