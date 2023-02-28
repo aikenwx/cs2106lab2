@@ -81,20 +81,19 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
     /******* FILL IN THE CODE *******/
 
     // Call everytime you need to update status and exit code of a process in PCBTable
-    printf("Updating status of process %d to %d with exit code %d", pid, status, exitCode);
+
     // May use WIFEXITED, WEXITSTATUS, WIFSIGNALED, WTERMSIG, WIFSTOPPED
+
+    printf("Updating status of process %d to %d with exit code %d", pid, status, exitCode);
     for (int i = 0; i < MAX_PROCESSES; i++) {
 
-            printf("[%d] %d %d\n", pcb_table[i].pid, pcb_table[i].status, pcb_table[i].exitCode);
-
+        printf("Checking process %d, status %d, exit code %d", pcb_table[i].pid, pcb_table[i].status, pcb_table[i].exitCode);
         if (pcb_table[i].pid == pid) {
             pcb_table[i].status = status;
             pcb_table[i].exitCode = exitCode;
             return;
         }
     }
-
-    // print the updated process, status and exit code
 }
 
 /*******************************************************************************
@@ -102,6 +101,7 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
  ******************************************************************************/
 
 static void signal_handler(int signo) {
+
     pid_t pid = getpid();
     if (signo == SIGTSTP) {
         printf("[%d] stopped\n", pid);
@@ -110,12 +110,10 @@ static void signal_handler(int signo) {
         printf("[%d] interrupted\n", pid);
         proc_update_status(pid, TERMINATING, 2);
     }
+    
+// Use the signo to identy ctrl-Z or ctrl-C and print “[PID] stopped or print “[PID] interrupted accordingly.
+// Update the status of the process in the PCB table
 
-    // print the updated process, status and exit code
-    printf("[%d] %d %d\n", pid, pcb_table[pid].status, pcb_table[pid].exitCode);
-
-    // Use the signo to identy ctrl-Z or ctrl-C and print “[PID] stopped or print “[PID] interrupted accordingly.
-    // Update the status of the process in the PCB table
 }
 
 static void handle_ctrl_z() {
@@ -462,6 +460,8 @@ void my_init(void) {
     // anything else you require
     pcb_table_count = 0;
     signal(SIGCHLD, handle_child_process_exited_or_stopped);
+
+
 }
 
 void my_process_command(size_t num_tokens, char** tokens) {
