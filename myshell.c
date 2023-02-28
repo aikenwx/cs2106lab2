@@ -314,6 +314,8 @@ static void command_exec(char* program, char** command, int num_tokens) {
 
         if (contains_output_redirect(command, num_tokens)) {
             int index = get_index_of_token(command, num_tokens, ">");
+            fprintf(stderr, "test %s\n", command[index + 1]);
+
             command[index] = NULL;
             fprintf(stderr, "test %s\n", command[index + 1]);
 
