@@ -138,7 +138,7 @@ static void handle_child_process_exited_or_stopped() {
     if (WIFSIGNALED(w_status)) {
 
         printf("[%d] exited abnormally\n", child_pid);
-        proc_update_status(child_pid, EXITED, WTERMSIG(w_status));
+        proc_update_status(child_pid, EXITED, WEXITSTATUS(w_status));
     }
 }
 
