@@ -322,7 +322,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
                 return;
             }
 
-            int output_file = open(command[index + 1], O_WRONLY | O_CREAT | O_TRUNC | O_SYNC);
+            int output_file = open(command[index + 1], O_WRONLY | O_CREAT | O_TRUNC | O_SYNC, 0644);
 
             dup2(output_file, STDOUT_FILENO);
             close(output_file);
@@ -339,7 +339,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
                 return;
             }
 
-            int error_file = open(command[index + 1], O_WRONLY | O_CREAT | O_TRUNC | O_SYNC);
+            int error_file = open(command[index + 1], O_WRONLY | O_CREAT | O_TRUNC | O_SYNC, 0644);
             dup2(error_file, STDERR_FILENO);
             close(error_file);
         }
