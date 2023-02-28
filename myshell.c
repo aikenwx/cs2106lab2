@@ -413,7 +413,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
         // PARENT PROCESS
         // register the process in process table
         add_new_proc(pid);
-
+        printf("test %d\n", pid);
         // If  child process need to execute in the background  (if & is present at the end )
         // print Child [PID] in background
         if (ends_with_ampersand(command, num_tokens)) {
