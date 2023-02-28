@@ -123,10 +123,12 @@ static void signal_handler(int signo) {
 }
 
 
-static void handle_child_process_exited_or_stopped() {
+static void handle_child_process_exited_or_stopped(int signo) {
     pid_t child_pid;
     int w_status;
     child_pid = wait(&w_status);
+
+    printf("%d", signo);
 
     if (child_pid == -1) {
         // PID of -1 means no current child process
