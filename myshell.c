@@ -110,10 +110,8 @@ static void signal_handler(int signo) {
         exit(2);
     } else if (signo == SIGINT && child_pid != -1) {
         printf("[%d] interrupted\n", child_pid);
-        proc_update_status(child_pid, TERMINATING, 2);
     } else if (signo == SIGTSTP && child_pid != -1) {
         printf("[%d] stopped\n", child_pid);
-        proc_update_status(child_pid, STOPPED, 2);
     }
     
 // Use the signo to identy ctrl-Z or ctrl-C and print “[PID] stopped or print “[PID] interrupted accordingly.
