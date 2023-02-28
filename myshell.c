@@ -450,7 +450,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
                 // and the process has already exited, so we do not need to do anything
                 return;
             }
-
+            printf("Child [%d] exited with code %d", pid, WEXITSTATUS(exit_status));
             proc_update_status(pid, EXITED, WEXITSTATUS(exit_status));
         }
 
