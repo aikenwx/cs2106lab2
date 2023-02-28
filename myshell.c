@@ -83,14 +83,16 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
     // Call everytime you need to update status and exit code of a process in PCBTable
 
     // May use WIFEXITED, WEXITSTATUS, WIFSIGNALED, WTERMSIG, WIFSTOPPED
-
     for (int i = 0; i < MAX_PROCESSES; i++) {
         if (pcb_table[i].pid == pid) {
             pcb_table[i].status = status;
             pcb_table[i].exitCode = exitCode;
-            return;
+            // return;
         }
     }
+
+    // print the updated process, status and exit code
+    printf("[%d] %d %d\n", pid, pcb_table[pid].status, pcb_table[pid].exitCode);
 }
 
 /*******************************************************************************
