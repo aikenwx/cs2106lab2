@@ -102,7 +102,7 @@ static void signal_handler(int signo) {
     if (signo == SIGTSTP) {
         child_pid = waitpid(-1, &w_status, WNOHANG);
 
-        printf("[%d] interrupted\n", child_pid);
+        printf("[%d] interrupted\n", getpid());
 
         return;
     }
