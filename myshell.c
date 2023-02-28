@@ -130,10 +130,14 @@ static void handle_child_process_exited_or_stopped() {
     child_pid = wait(&w_status);
     // Child exited under control
     if (WIFEXITED(w_status)) {
+        printf("[%d] exited under control\n", child_pid);
+
         proc_update_status(child_pid, EXITED, WEXITSTATUS(w_status));
     }
     // Child did not exit normally
     if (WIFSIGNALED(w_status)) {
+
+        printf("[%d] exited abnormally\n", child_pid);
         proc_update_status(child_pid, EXITED, WTERMSIG(w_status));
     }
 }
@@ -244,6 +248,8 @@ static void command_wait(char** command, int num_tokens) {
                 int w_status;
                 if (waitpid(pid_to_wait, &w_status, 0) > 0 && WIFEXITED(w_status)) {
                     int exit_code = WEXITSTATUS(w_status);
+
+                    printf("[%d] wait exited under control\n", pid_to_wait);
                     proc_update_status(pid_to_wait, EXITED, exit_code);
                 }
             }
@@ -269,6 +275,9 @@ static void command_terminate(char** command, int num_tokens) {
             if (pcb_table[i].status == RUNNING) {
                 // If kill returns 0, it means the signal was sent successfully
                 kill(pid_to_terminate, SIGTERM);
+
+                // log
+                printf("[%d] Terminating\n", pid_to_terminate);
                 proc_update_status(pid_to_terminate, TERMINATING, -1);
             }
             break;
@@ -298,6 +307,8 @@ static void command_fg(char** command, int num_tokens) {
                 int w_status;
                 if (waitpid(pid_to_fg, &w_status, 0) > 0 && WIFEXITED(w_status)) {
                     int exit_code = WEXITSTATUS(w_status);
+                    printf("[%d] fg\n", pid_to_fg);
+
                     proc_update_status(pid_to_fg, EXITED, exit_code);
                 }
             }
@@ -406,6 +417,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
             // else wait for the child process to exit
             int exit_status;
             waitpid(pid, &exit_status, WUNTRACED);
+            printf("[%d] not ampersand\n", pid);
 
             proc_update_status(pid, EXITED, WEXITSTATUS(exit_status));
         }
