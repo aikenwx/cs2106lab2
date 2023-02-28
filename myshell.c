@@ -32,9 +32,6 @@ static bool ends_with_ampersand(char** args, int num_args) {
 }
 
 static bool contains_output_redirect(char** args, int num_args) {
-    
-    
-    
     for (int i = 0; i < num_args; i++) {
         if (args[i] && strcmp(args[i], ">") == 0) {
             return true;
@@ -326,11 +323,9 @@ static void command_exec(char* program, char** command, int num_tokens) {
 
             dup2(output_file, STDOUT_FILENO);
             close(output_file);
+        }
 
-        } 
-
-        if (contains_error_redirect(command, num_tokens)){
-
+        if (contains_error_redirect(command, num_tokens)) {
             int index = get_index_of_token(command, num_tokens, "2>");
             command[index] = NULL;
 
