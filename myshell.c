@@ -135,6 +135,11 @@ static void handle_child_process_exited_or_stopped() {
     pid_t child_pid;
     int w_status;
     child_pid = wait(&w_status);
+
+    if (child_pid == -1) {
+        // PID of -1 means no current child process
+        return;
+    }
     // Child exited under control
     if (WIFEXITED(w_status)) {
         printf("[%d] exited under control\n", child_pid);
