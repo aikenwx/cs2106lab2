@@ -107,7 +107,14 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
     }
 }
 
-static void handle_child_process_exited_or_stopped() {
+static void handle_child_process_exited_or_stopped(int signo) {
+
+    printf("signo = %d\n", signo);
+
+    if (signo == SIGCHLD) {
+        printf("SIGCHLD\n");
+    } 
+    
     pid_t child_pid;
     int w_status;
     child_pid = wait(&w_status);
