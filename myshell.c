@@ -82,10 +82,10 @@ static void add_new_proc(pid_t pid) {
 static void signal_handler(int signo) {
     if (signo == SIGTSTP) {
         printf("[%d] stopped", getpid());
-        proc_update_status(getpid(), STOPPED, -1);
+        proc_update_status(getpid(), STOPPED, 2);
     } else if (signo == SIGINT) {
         printf("[%d] interrupted", getpid());
-        proc_update_status(getpid(), TERMINATING, -1);
+        proc_update_status(getpid(), TERMINATING, 2);
     }
 
 // Use the signo to identy ctrl-Z or ctrl-C and print “[PID] stopped or print “[PID] interrupted accordingly.
