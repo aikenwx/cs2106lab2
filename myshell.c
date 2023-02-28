@@ -290,7 +290,7 @@ static void command_fg(char** command, int num_tokens) {
     for (int i = 0; i < pcb_table_count; i++) {
         if (pcb_table[i].pid == pid_to_fg) {
             if (pcb_table[i].status == STOPPED) {
-                fprintf(stderr,"[%d] resumed\n", pid_to_fg);
+                printf("[%d] resumed\n", pid_to_fg);
                 kill(pid_to_fg, SIGCONT);
                 int w_status;
                 if (waitpid(pid_to_fg, &w_status, 0) > 0 && WIFEXITED(w_status)) {
