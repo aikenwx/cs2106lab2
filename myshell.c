@@ -103,7 +103,7 @@ static void signal_handler(int signo) {
     int w_status;
     child_pid = wait(&w_status);
 
-
+    printf("signal handler called");
 
     if (signo == SIGTSTP && child_pid == 0) {
         exit(2);
