@@ -307,7 +307,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
 
             if (input_file == -1) {
                 fprintf(stderr, "%s does not exist\n", command[index + 1]);
-                return 1;
+                exit(1);
             }
             dup2(input_file, STDIN_FILENO);
             close(input_file);
