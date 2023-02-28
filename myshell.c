@@ -71,7 +71,7 @@ static int get_index_of_token(char** args, int num_args, char* token) {
 
         // print args[i]
         fprintf(stderr, "finder args[%d] = %s", i, args[i]);
-        if (strcmp(args[i], token) == 0) {
+        if (args[i] && strcmp(args[i], token) == 0) {
             return i;
         }
     }
