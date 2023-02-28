@@ -113,8 +113,14 @@ static void signal_handler(int signo) {
 
     } else if (signo == SIGINT && getpid() == parent_pid) {
         printf("[%d] interrupted", pcb_table[pcb_table_count - 1].pid);
+        pid_t pid = pcb_table[pcb_table_count - 1].pid;
+        kill(pid, SIGINT);
     } else if (signo == SIGTSTP && getpid() == parent_pid) {
         printf("[%d] stopped", pcb_table[pcb_table_count - 1].pid);
+        pid_t pid = pcb_table[pcb_table_count - 1].pid;
+        kill(pid, SIGTSTP);
+
+        proc_update_status(pid, STOPPED, -1);
     }
 
     // Use the signo to identy ctrl-Z or ctrl-C and print “[PID] stopped or print “[PID] interrupted accordingly.
