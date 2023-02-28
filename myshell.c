@@ -75,6 +75,24 @@ static void add_new_proc(pid_t pid) {
     pcb_table_count++;
 }
 
+/// TODO when piping file output, rememeber to make created file readable globally
+
+static void proc_update_status(pid_t pid, int status, int exitCode) {
+    /******* FILL IN THE CODE *******/
+
+    // Call everytime you need to update status and exit code of a process in PCBTable
+
+    // May use WIFEXITED, WEXITSTATUS, WIFSIGNALED, WTERMSIG, WIFSTOPPED
+
+    for (int i = 0; i < MAX_PROCESSES; i++) {
+        if (pcb_table[i].pid == pid) {
+            pcb_table[i].status = status;
+            pcb_table[i].exitCode = exitCode;
+            return;
+        }
+    }
+}
+
 /*******************************************************************************
  * Signal handler : ex4
  ******************************************************************************/
@@ -99,24 +117,6 @@ static void handle_ctrl_z() {
 
 static void handle_ctrl_c() {
     signal(SIGINT, signal_handler);
-}
-
-/// TODO when piping file output, rememeber to make created file readable globally
-
-static void proc_update_status(pid_t pid, int status, int exitCode) {
-    /******* FILL IN THE CODE *******/
-
-    // Call everytime you need to update status and exit code of a process in PCBTable
-
-    // May use WIFEXITED, WEXITSTATUS, WIFSIGNALED, WTERMSIG, WIFSTOPPED
-
-    for (int i = 0; i < MAX_PROCESSES; i++) {
-        if (pcb_table[i].pid == pid) {
-            pcb_table[i].status = status;
-            pcb_table[i].exitCode = exitCode;
-            return;
-        }
-    }
 }
 
 static void handle_child_process_exited_or_stopped() {
