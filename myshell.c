@@ -82,6 +82,8 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
 
     // May use WIFEXITED, WEXITSTATUS, WIFSIGNALED, WTERMSIG, WIFSTOPPED
 
+    printf("proc_update_status: pid = %d, status = %d, exitCode = %d", pid, status, exitCode);
+
     for (int i = 0; i < MAX_PROCESSES; i++) {
         if (pcb_table[i].pid == pid) {
             pcb_table[i].status = status;
@@ -107,7 +109,7 @@ static void signal_handler(int signo) {
         proc_update_status(pid, STOPPED, -1);
 
     } else if (signo == SIGINT && getpid() == parent_pid) {
-        printf("[%d] interrrupted", pcb_table[pcb_table_count - 1].pid);
+        printf("[%d] interrupted", pcb_table[pcb_table_count - 1].pid);
     } else if (signo == SIGTSTP && getpid() == parent_pid) {
         printf("[%d] stopped", pcb_table[pcb_table_count - 1].pid);
     }
@@ -119,12 +121,6 @@ static void signal_handler(int signo) {
 /// TODO when piping file output, rememeber to make created file readable globally
 
 static void handle_child_process_exited_or_stopped(int signo) {
-    printf("signo = %d\n", signo);
-
-    if (signo == SIGCHLD) {
-        printf("SIGCHLD\n");
-    }
-
     pid_t child_pid;
     int w_status;
 
