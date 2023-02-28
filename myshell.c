@@ -32,7 +32,14 @@ static bool ends_with_ampersand(char** args, int num_args) {
 }
 
 static bool contains_output_redirect(char** args, int num_args) {
+    
+    
+    
     for (int i = 0; i < num_args; i++) {
+
+        // print args1
+
+        fprintf(stderr, "args[%d] = %s\n", i, args[i]);
         if (args[i] && strcmp(args[i], ">") == 0) {
             return true;
         }
@@ -318,9 +325,12 @@ static void command_exec(char* program, char** command, int num_tokens) {
         fprintf(stderr, "test3");
 
         if (contains_output_redirect(command, num_tokens)) {
-                    fprintf(stderr, "test4");
+            fprintf(stderr, "test4");
 
             int index = get_index_of_token(command, num_tokens, ">");
+
+            fprintf(stderr, "test4.5");
+
             fprintf(stderr, "test %s\n", command[index + 1]);
 
             command[index] = NULL;
@@ -337,6 +347,8 @@ static void command_exec(char* program, char** command, int num_tokens) {
             close(output_file);
 
         } 
+        fprintf(stderr, "test5");
+
         if (contains_error_redirect(command, num_tokens)){
 
             int index = get_index_of_token(command, num_tokens, "2>");
@@ -352,6 +364,7 @@ static void command_exec(char* program, char** command, int num_tokens) {
             dup2(error_file, STDERR_FILENO);
             close(error_file);
         }
+        fprintf(stderr, "test6");
 
         // else : ex1, ex2
         // call execv() to execute the command in the child process
