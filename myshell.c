@@ -432,7 +432,9 @@ static void command_exec(char* program, char** command, int num_tokens) {
 
 static void command(char** command, int num_tokens) {
     /******* FILL IN THE CODE *******/
-
+    for (int i = 0; i < num_tokens; i++) {
+        printf("%s ", command[i]);
+    }
     char* program = command[0];
     // if command is "info" call command_info()             : ex1
     if (strcmp(program, "info") == 0) {
