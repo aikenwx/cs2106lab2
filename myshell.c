@@ -97,29 +97,30 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
  ******************************************************************************/
 
 
-static void signal_handler(int signo) {
-    pid_t child_pid;
-    int w_status;
-    child_pid = wait(&w_status);
+// static void signal_handler(int signo) {
+//     pid_t child_pid;
+//     int w_status;
+//     printf("signal handler called");
 
-    printf("signal handler called");
+//     child_pid = wait(&w_status);
 
-    if (signo == SIGTSTP && child_pid == 0) {
-        exit(2);
-    } else if (signo == SIGINT && child_pid == 0) {
-        exit(2);
-    } else if (signo == SIGINT && child_pid != -1) {
-        printf("[%d] interrupted\n", child_pid);
-        proc_update_status(child_pid, EXITED, 2);
-    } else if (signo == SIGTSTP && child_pid != -1) {
-        printf("[%d] stopped\n", child_pid);
-        proc_update_status(child_pid, STOPPED, -1);
-    }
 
-// Use the signo to identy ctrl-Z or ctrl-C and print “[PID] stopped or print “[PID] interrupted accordingly.
-// Update the status of the process in the PCB table
+//     if (signo == SIGTSTP && child_pid == 0) {
+//         exit(2);
+//     } else if (signo == SIGINT && child_pid == 0) {
+//         exit(2);
+//     } else if (signo == SIGINT && child_pid != -1) {
+//         printf("[%d] interrupted\n", child_pid);
+//         proc_update_status(child_pid, EXITED, 2);
+//     } else if (signo == SIGTSTP && child_pid != -1) {
+//         printf("[%d] stopped\n", child_pid);
+//         proc_update_status(child_pid, STOPPED, -1);
+//     }
 
-}
+// // Use the signo to identy ctrl-Z or ctrl-C and print “[PID] stopped or print “[PID] interrupted accordingly.
+// // Update the status of the process in the PCB table
+
+// }
 
 
 static void handle_child_process_exited_or_stopped() {
