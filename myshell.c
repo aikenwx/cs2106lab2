@@ -100,10 +100,15 @@ static void proc_update_status(pid_t pid, int status, int exitCode) {
  * Signal handler : ex4
  ******************************************************************************/
 
+bool has_already_waited = false;
+
 static void signal_handler(int signo) {
     pid_t child_pid;
     int w_status;
     child_pid = wait(&w_status);
+
+
+
     if (signo == SIGTSTP && child_pid == 0) {
         exit(2);
     } else if (signo == SIGINT && child_pid == 0) {
@@ -113,7 +118,8 @@ static void signal_handler(int signo) {
     } else if (signo == SIGTSTP && child_pid != -1) {
         printf("[%d] stopped\n", child_pid);
     }
-    
+
+    has_already_waited = true;  
 // Use the signo to identy ctrl-Z or ctrl-C and print “[PID] stopped or print “[PID] interrupted accordingly.
 // Update the status of the process in the PCB table
 
@@ -419,8 +425,16 @@ static void command_exec(char* program, char** command, int num_tokens) {
         if (ends_with_ampersand(command, num_tokens)) {
             printf("Child [%d] in background\n", pid);
             waitpid(pid, NULL, WNOHANG);
+        } else if (has_already_waited) {
+
+            // if the child process is already waited for after ctrl-z, ctrl-c, do not wait again
+            has_already_waited = false;
+            return;
         } else {
             // else wait for the child process to exit
+
+
+
             int exit_status;
             printf("test2 %d\n", pid);
 
