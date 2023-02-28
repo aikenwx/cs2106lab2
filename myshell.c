@@ -100,7 +100,10 @@ static void signal_handler(int signo) {
     pid_t child_pid;
     int w_status;
     if (signo == SIGTSTP) {
-        printf("[%d] interrupted\n", getpid());
+        child_pid = waitpid(-1, &w_status, WNOHANG);
+
+        printf("[%d] interrupted\n", child_pid);
+
         return;
     }
     printf("signal handler called");
@@ -129,12 +132,13 @@ static void handle_child_process_exited_or_stopped(int signo) {
 
     if (signo == SIGCHLD) {
         printf("signal handler called");
+        child_pid = waitpid(-1, &w_status, WNOHANG);
 
+        printf("child_pid: %d", child_pid);
         return;
     }
 
     child_pid = wait(&w_status);
-
 
     if (child_pid == -1) {
         // PID of -1 means no current child process
