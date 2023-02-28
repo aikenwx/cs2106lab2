@@ -36,10 +36,6 @@ static bool contains_output_redirect(char** args, int num_args) {
     
     
     for (int i = 0; i < num_args; i++) {
-
-        // print args1
-
-        fprintf(stderr, "args[%d] = %s\n", i, args[i]);
         if (args[i] && strcmp(args[i], ">") == 0) {
             return true;
         }
@@ -68,9 +64,6 @@ static bool contains_input_redirect(char** args, int num_args) {
 static int get_index_of_token(char** args, int num_args, char* token) {
     // returns index of token in args
     for (int i = 0; i < num_args; i++) {
-
-        // print args[i]
-        fprintf(stderr, "finder args[%d] = %s", i, args[i]);
         if (args[i] && strcmp(args[i], token) == 0) {
             return i;
         }
@@ -301,47 +294,32 @@ static void command_exec(char* program, char** command, int num_tokens) {
         // use fopen/open file to open the file for reading/writing with  permission O_RDONLY, O_WRONLY, O_CREAT, O_TRUNC, O_SYNC and 0644
         // use dup2 to redirect the stdin, stdout and stderr to the files
         // call execv() to execute the command in the child process
-        fprintf(stderr, "contains %s %s %s", contains_error_redirect(command, num_tokens) ? "error" : "no error",
-                contains_input_redirect(command, num_tokens) ? "input" : "no input",
-                contains_output_redirect(command, num_tokens) ? "output" : "no output");
-        
-        // log 
-        fprintf(stderr, "test1");
-        if (contains_input_redirect(command, num_tokens)) {
-                    fprintf(stderr, "test2");
 
+        if (contains_input_redirect(command, num_tokens)) {
             int index = get_index_of_token(command, num_tokens, "<");
             command[index] = NULL;
 
             if (index == -1 || index == num_tokens - 1) {
                 fprintf(stderr, "Wrong command");
+                return;
             }
             int input_file = open(command[index + 1], O_RDONLY, O_SYNC);
 
             if (input_file == -1) {
                 fprintf(stderr, "%s does not exist\n", command[index + 1]);
-                exit(1);
+                return;
             }
             dup2(input_file, STDIN_FILENO);
             close(input_file);
         }
-        fprintf(stderr, "test3");
 
         if (contains_output_redirect(command, num_tokens)) {
-            fprintf(stderr, "test4");
-
             int index = get_index_of_token(command, num_tokens, ">");
-
-            fprintf(stderr, "test4.5");
-
-            fprintf(stderr, "test %s\n", command[index + 1]);
-
             command[index] = NULL;
-            fprintf(stderr, "test %s\n", command[index + 1]);
 
             if (index == -1 || index == num_tokens - 1) {
                 fprintf(stderr, "Wrong command");
-                exit(1);
+                return;
             }
 
             int output_file = open(command[index + 1], O_WRONLY | O_CREAT | O_TRUNC | O_SYNC);
@@ -350,24 +328,21 @@ static void command_exec(char* program, char** command, int num_tokens) {
             close(output_file);
 
         } 
-        fprintf(stderr, "test5");
 
         if (contains_error_redirect(command, num_tokens)){
 
             int index = get_index_of_token(command, num_tokens, "2>");
             command[index] = NULL;
 
-            fprintf(stderr, "test %s\n", command[index + 1]);
             if (index == -1 || index == num_tokens - 1) {
                 fprintf(stderr, "Wrong command");
-                exit(1);
+                return;
             }
 
             int error_file = open(command[index + 1], O_WRONLY | O_CREAT | O_TRUNC | O_SYNC);
             dup2(error_file, STDERR_FILENO);
             close(error_file);
         }
-        fprintf(stderr, "test6");
 
         // else : ex1, ex2
         // call execv() to execute the command in the child process
