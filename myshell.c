@@ -131,10 +131,14 @@ static void handle_child_process_exited_or_stopped(int signo) {
     int w_status;
 
     if (signo == SIGCHLD) {
-        printf("signal handler called");
-        child_pid = waitpid(-1, &w_status, WNOHANG);
-        printf("child_pid: %d", child_pid);
-        printf("child_pid: %d", getpid());
+        // printf("signal handler called");
+        // child_pid = waitpid(-1, &w_status, WNOHANG);
+        // printf("child_pid: %d", child_pid);
+        // printf("child_pid: %d", getpid());
+
+        // get the pid of the last process in PBT table
+        child_pid = pcb_table[pcb_table_count - 1].pid;
+        proc_update_status(child_pid, STOPPED, -1);
         return;
     }
 
