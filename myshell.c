@@ -488,7 +488,7 @@ void my_init(void) {
     pcb_table_count = 0;
     signal(SIGTSTP, handle_ctrl_z);
     signal(SIGINT, handle_ctrl_c);
-    signal(SIGCHLD, handle_child_process_exited_or_stopped);
+    // signal(SIGCHLD, handle_child_process_exited_or_stopped);
 
 
 
