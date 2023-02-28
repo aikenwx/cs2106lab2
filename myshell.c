@@ -79,12 +79,27 @@ static void add_new_proc(pid_t pid) {
  * Signal handler : ex4
  ******************************************************************************/
 
-// static void signal_handler(int signo) {
+static void signal_handler(int signo) {
+    if (signo == SIGTSTP) {
+        printf("[%d] stopped", getpid());
+        proc_update_status(getpid(), STOPPED, -1);
+    } else if (signo == SIGINT) {
+        printf("[%d] interrupted", getpid());
+        proc_update_status(getpid(), TERMINATING, -1);
+    }
 
 // Use the signo to identy ctrl-Z or ctrl-C and print “[PID] stopped or print “[PID] interrupted accordingly.
 // Update the status of the process in the PCB table
 
-// }
+}
+
+static void handle_ctrl_z() {
+    signal(SIGTSTP, signal_handler);
+}
+
+static void handle_ctrl_c() {
+    signal(SIGINT, signal_handler);
+}
 
 /// TODO when piping file output, rememeber to make created file readable globally
 
@@ -256,14 +271,34 @@ static void command_terminate(char** command, int num_tokens) {
     }
 }
 
-static void command_fg(/* pass necessary parameters*/) {
+static void command_fg(char** command, int num_tokens) {
     /******* FILL IN THE CODE *******/
 
-    printf("fg called\n");
     // if the {PID} status is stopped
     // Print “[PID] resumed”
     // Use kill() to send SIGCONT to {PID} to get it continue and wait for it
     // After the process terminate, update status and exit code (call proc_update_status())
+
+    if (num_tokens != 2) {
+        fprintf(stderr, "Wrong command\n");
+        return;
+    }
+    pid_t pid_to_fg = atoi(command[1]);
+
+    for (int i = 0; i < pcb_table_count; i++) {
+        if (pcb_table[i].pid == pid_to_fg) {
+            if (pcb_table[i].status == STOPPED) {
+                fprintf(stderr,"[%d] resumed\n", pid_to_fg);
+                kill(pid_to_fg, SIGCONT);
+                int w_status;
+                if (waitpid(pid_to_fg, &w_status, 0) > 0 && WIFEXITED(w_status)) {
+                    int exit_code = WEXITSTATUS(w_status);
+                    proc_update_status(pid_to_fg, EXITED, exit_code);
+                }
+            }
+            break;
+        }
+    }
 }
 
 /*******************************************************************************
@@ -272,7 +307,6 @@ static void command_fg(/* pass necessary parameters*/) {
 
 static void command_exec(char* program, char** command, int num_tokens) {
     /******* FILL IN THE CODE *******/
-
     // check if program exists and is executable : use access()
     if (access(program, F_OK) != 0 && access(program, X_OK) != 0) {
         fprintf(stderr, "%s not found \n", program);
@@ -400,7 +434,7 @@ static void command(char** command, int num_tokens) {
     }
     // if command is "fg" call command_fg()                 : ex4
     if (strcmp(program, "fg") == 0) {
-        command_fg();
+        command_fg(command, num_tokens);
         return;
     }
     // call command_exec() for all other commands           : ex1, ex2, ex3
@@ -416,10 +450,13 @@ void my_init(void) {
 
     // use signal() with SIGTSTP to setup a signalhandler for ctrl+z : ex4
     // use signal() with SIGINT to setup a signalhandler for ctrl+c  : ex4
-
+    signal(SIGTSTP, handle_ctrl_z);
+    signal(SIGINT, handle_ctrl_c);
     // anything else you require
     pcb_table_count = 0;
     signal(SIGCHLD, handle_child_process_exited_or_stopped);
+
+
 }
 
 void my_process_command(size_t num_tokens, char** tokens) {
@@ -454,7 +491,7 @@ void my_quit(void) {
     // Kill every process in the PCB that is either stopped or running
 
     for (int i = 0; i < MAX_PROCESSES; i++) {
-        if (pcb_table[i].status == RUNNING) {
+        if (pcb_table[i].status == RUNNING || pcb_table[i].status == STOPPED) {
             kill(pcb_table[i].pid, SIGTERM);
             printf("Killing [%d]\n", pcb_table[i].pid);
         }
