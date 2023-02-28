@@ -138,12 +138,13 @@ static void handle_child_process_exited_or_stopped(int signo) {
 
         // get the pid of the last process in PBT table
         child_pid = pcb_table[pcb_table_count - 1].pid;
+        printf("[%d] stopped\n", child_pid);
+
         proc_update_status(child_pid, STOPPED, -1);
         return;
     }
 
     child_pid = wait(&w_status);
-
 
     if (child_pid == -1) {
         // PID of -1 means no current child process
